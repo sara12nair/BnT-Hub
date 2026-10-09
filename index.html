@@ -91,18 +91,18 @@
 .bnt-quick{background:#fff;padding:7px 12px;border-bottom:1px solid #d7e4e1;position:relative;z-index:3}
 .bnt-quick-line{display:flex;gap:7px;align-items:center}.bnt-quick input{flex:1;min-width:0;font:inherit;padding:9px;border:1px solid #abc8c0;border-radius:8px}
 .bnt-quick button{font:inherit;border:1px solid #b8d1c8;border-radius:7px;background:#fff;padding:7px 10px;cursor:pointer}
-#bntQuickResults{max-height:35dvh;overflow:auto}#bntQuickResults:empty{display:none}.bnt-result{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:7px 2px;border-bottom:1px solid #e2e9e8}.bnt-result-name{min-width:0;overflow:hidden;text-overflow:ellipsis}.bnt-result-name small{display:block;color:#59717a}.bnt-result-actions{display:flex;gap:5px;flex-shrink:0}.bnt-result-actions a{padding:7px 9px;border-radius:7px;text-decoration:none;color:#126142;background:#e3f4e9;font-weight:650}.bnt-result-actions a.wa{background:#e2f0ff;color:#14558a}
+.bnt-inactive-choice{margin-left:auto;font-weight:500!important;color:#555}#bntQuickResults{max-height:184px;overflow-y:auto;overscroll-behavior:contain}#bntQuickResults[hidden]{display:none!important}.bnt-result{min-height:42px;box-sizing:border-box}#bntQuickToggle{white-space:nowrap}@media(max-width:650px){#bntQuickResults{max-height:156px}.bnt-result{gap:4px;padding:5px 1px}.bnt-result-actions{gap:3px}.bnt-result-actions a,.bnt-result-actions button{padding:5px 6px;font-size:12px}}#bntQuickResults:empty{display:none}.bnt-result{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:7px 2px;border-bottom:1px solid #e2e9e8}.bnt-result-name{min-width:0;overflow:hidden;text-overflow:ellipsis}.bnt-result-name small{display:block;color:#59717a}.bnt-result-actions{display:flex;gap:5px;flex-shrink:0}.bnt-result-actions a{padding:7px 9px;border-radius:7px;text-decoration:none;color:#126142;background:#e3f4e9;font-weight:650}.bnt-result-actions a.wa{background:#e2f0ff;color:#14558a}
 @media(max-width:650px){header{padding:5px 9px 0}.top{gap:4px}.top h1{font-size:13px;margin:0;width:100%}.top button{padding:4px 7px!important;font-size:11px!important}.tab{padding:7px 10px!important;font-size:12px!important}.onedb-trial{display:none}.onedb-actions{padding:3px 7px;font-size:11px}.onedb-actions button{padding:4px 6px;font-size:11px}.status{padding:3px 8px;font-size:11px}.bnt-quick{padding:5px 8px}}
-</style></head>
+ .bnt-scope{display:flex;align-items:center;gap:14px;padding:0 0 5px;font-size:12px;font-weight:600;flex-wrap:wrap}.bnt-scope label{display:inline-flex;align-items:center;gap:3px;cursor:pointer;white-space:nowrap}.bnt-scope input{flex:none;width:auto;min-width:0;padding:0;margin:0;accent-color:#087c54}</style></head>
 <body>
 <header>
-  <div class="top"><h1>Buyer &amp; Team Hub · OneDB · Release 261009_1035</h1><button id="waSetupButton" type="button">WhatsApp setup</button><button id="planOpen" type="button">Daily plan / KPI</button><button id="reviewButton" type="button" aria-haspopup="dialog">Call review</button></div>
+  <div class="top"><h1>Buyer &amp; Team Hub · OneDB · Release 261009_1616</h1><button id="waSetupButton" type="button">WhatsApp setup</button><button id="planOpen" type="button">Daily plan / KPI</button><button id="reviewButton" type="button" aria-haspopup="dialog">Call review</button></div>
   <div class="tabs" role="tablist" aria-label="Choose app">
     <button class="tab" id="tab-buyer" type="button" role="tab" aria-selected="true" aria-controls="app-buyer">Buyer CRM</button>
     <button class="tab" id="tab-candidate" type="button" role="tab" aria-selected="false" aria-controls="app-candidate">Candidate Hub</button>
   </div>
 </header>
-<section class="bnt-quick" aria-label="Universal People search"><div class="bnt-quick-line"><input id="bntQuickInput" type="search" placeholder="Search all People · name / phone / notes" autocomplete="off" aria-label="Search all People"><button id="bntQuickClear" type="button">Clear</button></div><div id="bntQuickResults" aria-live="polite"></div></section><div class="onedb-trial">Buyer, Candidate and Team · one shared People database · Daily Plan / Achieved / KPI monitor · Release 261009_1035. Download a OneDB backup before importing or restoring records.</div><div class="status" id="status" role="status">Loading OneDB…</div><div class="onedb-actions"><span id="oneDbCount">Opening database…</span><button id="roleOpen" type="button">Move / set roles</button><button id="oneDbExport" type="button">Download OneDB backup</button><button id="oneDbRestore" type="button">Restore OneDB backup</button><input id="oneDbFile" type="file" accept=".json,application/json" hidden><button id="oneDbExceptions" type="button">Review held rows (0)</button><span id="oneDbStatus" role="status"></span></div><dialog id="oneDbReview"><h2>Held import rows</h2><p>These source rows share a phone with another record of the same role. Correct the number to add them; the original row is retained in the backup.</p><div id="oneDbHeldRows"></div><button type="button" id="oneDbReviewClose">Close</button></dialog>
+<section class="bnt-quick" aria-label="Universal People search"><div class="bnt-scope" role="group" aria-label="Search category"><label><input type="radio" name="bntQuickScope" value="all" checked> All People</label><label><input type="radio" name="bntQuickScope" value="buyer"> Buyer</label><label><input type="radio" name="bntQuickScope" value="candidate"> Candidate</label><label class="bnt-inactive-choice"><input id="bntIncludeInactive" type="checkbox"> Include Not Interested / inactive</label></div><div class="bnt-quick-line"><input id="bntQuickInput" type="search" placeholder="Search all People · name / phone / notes" autocomplete="off" aria-label="Search all People"><button id="bntQuickClear" type="button">Clear</button><button id="bntQuickToggle" type="button" aria-controls="bntQuickResults" aria-expanded="false" hidden>▲ Hide</button></div><div id="bntQuickResults" aria-live="polite"></div></section><div class="onedb-trial">Buyer, Candidate and Team · one shared People database · Daily Plan / Achieved / KPI monitor · Release 261009_1616. Download a OneDB backup before importing or restoring records.</div><div class="status" id="status" role="status">Loading OneDB…</div><div class="onedb-actions"><span id="oneDbCount">Opening database…</span><button id="roleOpen" type="button">Move / set roles</button><button id="oneDbExport" type="button">Download OneDB backup</button><button id="oneDbRestore" type="button">Restore OneDB backup</button><input id="oneDbFile" type="file" accept=".json,application/json" hidden><button id="oneDbExceptions" type="button">Review held rows (0)</button><span id="oneDbStatus" role="status"></span></div><dialog id="oneDbReview"><h2>Held import rows</h2><p>These source rows share a phone with another record of the same role. Correct the number to add them; the original row is retained in the backup.</p><div id="oneDbHeldRows"></div><button type="button" id="oneDbReviewClose">Close</button></dialog>
 <dialog id="roleDialog" aria-labelledby="roleTitle">
   <h2 id="roleTitle">Move or share a person between lists</h2>
   <p>Search by phone or name, then choose Buyer, Candidate, or both. When correcting a mistaken Buyer entry, remove its Buyer details.</p>
@@ -177,6 +177,13 @@
   const $=id=>document.getElementById(id);
   const dialog=$('roleDialog'),search=$('roleSearch'),matches=$('roleMatches'),result=$('roleResult');
   const digits=v=>String(v||'').replace(/\D/g,'');
+ const displayPhone=v=>{const raw=String(v||'').trim(),d=digits(raw);return d.length===10?d.slice(0,4)+'-'+d.slice(4,7)+'-'+d.slice(7):d.length===12&&d.startsWith('91')?'+91 '+d.slice(2,6)+'-'+d.slice(6,9)+'-'+d.slice(9):raw;};
+ // Match explicit current outcomes, not historical notes mentioning a failed call.
+ function inactiveStatus(value){return /^(?:not[\s_-]*interested|failed|not[\s_-]*selected|rejected|dropped|drop[\s_-]*out|lost|closed[\s_-]*lost|did[\s_-]*not[\s_-]*join)$/i.test(String(value||'').trim());}
+ function buyerInactive(p){const b=p.buyer||{};return !!b.archived||[b.stage,b.outcome,b.status,b.failureReason].some(inactiveStatus);}
+ function candidateInactive(p){const c=p.candidate||{};return (c.categories||[]).includes('purged')||!!c.archived||[c.status,c.outcome,c.realEstateOutcome,c.interviewOutcome].some(inactiveStatus);}
+ function isInactiveForScope(p,scope){if(p.archived)return true;if(scope==='buyer')return buyerInactive(p);if(scope==='candidate')return candidateInactive(p);const roles=p.roles||[];return (!roles.includes('buyer')||buyerInactive(p))&&(!roles.includes('candidate')||candidateInactive(p))&&(!roles.includes('team')||!!p.team?.archived);}
+
   function draw(){
     const store=window.bntStore,q=search.value.trim().toLowerCase(),d=digits(q);
     matches.replaceChildren();
@@ -940,21 +947,33 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
 </script>
 <script>
 (()=>{
- const input=document.getElementById('bntQuickInput'),out=document.getElementById('bntQuickResults');
+ const input=document.getElementById('bntQuickInput'),out=document.getElementById('bntQuickResults'),toggle=document.getElementById('bntQuickToggle');
+ let collapsed=false;
+ function syncPanel(){const hasQuery=!!input.value.trim();toggle.hidden=!hasQuery;out.hidden=!hasQuery||collapsed;toggle.textContent=collapsed?'▼ Results':'▲ Hide';toggle.setAttribute('aria-expanded',String(hasQuery&&!collapsed));}
+ toggle.addEventListener('click',()=>{collapsed=!collapsed;syncPanel();});
+ input.addEventListener('keydown',e=>{if(e.key==='Escape'&&input.value.trim()){e.preventDefault();collapsed=true;syncPanel();}});
+ 
  const digits=v=>String(v||'').replace(/\D/g,'');
- function render(){const q=input.value.trim();out.replaceChildren();if(!q)return;
- const rows=window.bntSearchPeople?window.bntSearchPeople(q).slice(0,60):[];
+ function inactiveStatus(value){return /^(?:not[\s_-]*interested|failed|not[\s_-]*selected|rejected|dropped|drop[\s_-]*out|lost|closed[\s_-]*lost|did[\s_-]*not[\s_-]*join)$/i.test(String(value||'').trim());}
+ function buyerInactive(p){const b=p.buyer||{};return !!b.archived||[b.stage,b.outcome,b.status,b.failureReason].some(inactiveStatus);}
+ function candidateInactive(p){const c=p.candidate||{};return (c.categories||[]).includes('purged')||!!c.archived||[c.status,c.outcome,c.realEstateOutcome,c.interviewOutcome].some(inactiveStatus);}
+ function isInactiveForScope(p,scope){if(p.archived)return true;if(scope==='buyer')return buyerInactive(p);if(scope==='candidate')return candidateInactive(p);const roles=p.roles||[];return (!roles.includes('buyer')||buyerInactive(p))&&(!roles.includes('candidate')||candidateInactive(p))&&(!roles.includes('team')||!!p.team?.archived);}
+
+ function render(){const q=input.value.trim();out.replaceChildren();syncPanel();if(!q)return;
+ const scope=document.querySelector('input[name="bntQuickScope"]:checked')?.value||'all';
+ const includeInactive=document.getElementById('bntIncludeInactive').checked;
+ const rows=window.bntSearchPeople?window.bntSearchPeople(q,includeInactive).filter(p=>(scope==='all'||(p.roles||[]).includes(scope))&&(includeInactive||!isInactiveForScope(p,scope))).slice(0,60):[];
  if(!rows.length){out.textContent='No matching active People';return;}
  for(const p of rows){const n=digits(p.phone||p.buyer?.phone||p.candidate?.phone||p.team?.phone),wa=digits(p.candidate?.whatsapp||n);
  const row=document.createElement('div');row.className='bnt-result';const label=document.createElement('div');label.className='bnt-result-name';
- const strong=document.createElement('strong');strong.textContent=p.name||'(Unnamed)';const small=document.createElement('small');small.textContent=(p.phone||'No phone')+' · '+(p.roles||[]).join(', ');label.append(strong,small);row.append(label);
+ const strong=document.createElement('strong');strong.textContent=p.name||'(Unnamed)';const small=document.createElement('small');small.textContent=(p.phone?displayPhone(p.phone):'No phone')+' · '+(p.roles||[]).join(', ');label.append(strong,small);row.append(label);
  const actions=document.createElement('div');actions.className='bnt-result-actions';
- if(n){const a=document.createElement('a');a.href='tel:+'+(n.length===10?'91':'')+n;a.textContent='☎ Call';a.setAttribute('aria-label','Call '+(p.name||n));actions.append(a)}
+ if(n){const a=document.createElement('button');a.type='button';a.textContent='☎ Call';a.setAttribute('aria-label','Call '+(p.name||n));a.style.cssText='background:#e3f4e9;color:#126142;font-weight:650;padding:7px 9px';a.onclick=()=>{collapsed=true;syncPanel();window.bntCallPerson?.(p.id)};actions.append(a)}
  if(wa){const a=document.createElement('a');a.className='wa';a.href='https://wa.me/'+(wa.length===10?'91':'')+wa;a.target='_blank';a.rel='noopener noreferrer';a.textContent='WA';a.setAttribute('aria-label','WhatsApp '+(p.name||wa));a.addEventListener('click',()=>window.bntRegisterWhatsAppOpen?.());actions.append(a)}
- const edit=document.createElement('button');edit.type='button';edit.textContent='Open';edit.onclick=()=>window.bntEditPerson?.(p.id);actions.append(edit);row.append(actions);out.append(row);
+ const edit=document.createElement('button');edit.type='button';edit.textContent='Open';edit.onclick=()=>{collapsed=true;syncPanel();window.bntEditPerson?.(p.id)};actions.append(edit);row.append(actions);out.append(row);
  }}
- input.addEventListener('input',render);input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.value='';render();input.focus()}});
- document.getElementById('bntQuickClear').onclick=()=>{input.value='';render();input.focus()};window.addEventListener('bnt-people-updated',()=>{if(input.value)render()});
+ document.getElementById('bntIncludeInactive').addEventListener('change',()=>{collapsed=false;render()});document.querySelectorAll('input[name="bntQuickScope"]').forEach(r=>r.addEventListener('change',()=>{collapsed=false;input.placeholder=r.value==='all'?'Search all People · name / phone / notes':r.value==='buyer'?'Search Buyers · name / phone / notes':'Search Candidates · name / phone / notes';render()}));input.addEventListener('input',()=>{collapsed=false;render()});input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.value='';collapsed=false;render();input.focus()}});
+ document.getElementById('bntQuickClear').onclick=()=>{input.value='';collapsed=false;render();input.focus()};window.addEventListener('bnt-people-updated',()=>{if(input.value)render()});
 })();
 </script>
 </body>
