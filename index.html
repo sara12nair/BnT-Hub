@@ -10,7 +10,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Buyer &amp; Team Hub · 261109_1936 IST</title>
+<title>Buyer &amp; Team Hub · 261109_2130 IST</title>
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; font: 15px system-ui, -apple-system, sans-serif; color: #173044; }
@@ -159,7 +159,7 @@ window.bntDisplayPhone=value=>{
 </head>
 <body>
 <header>
-  <div class="top"><h1>Buyer &amp; Team Hub · OneDB · 261109_1936</h1><button id="waSetupButton" type="button">WhatsApp setup</button><button id="secretaryOpen" type="button">📞 Calls Required</button><button id="planOpen" type="button">Daily plan / KPI</button><button id="reviewButton" type="button" aria-haspopup="dialog">Call review</button></div>
+  <div class="top"><h1>Buyer &amp; Team Hub · OneDB · 261109_2130</h1><button id="waSetupButton" type="button">WhatsApp setup</button><button id="secretaryOpen" type="button">📞 Calls Required</button><button id="planOpen" type="button">Daily plan / KPI</button><button id="reviewButton" type="button" aria-haspopup="dialog">Call review</button></div>
   <div class="tabs" role="tablist" aria-label="Choose app">
     <button class="tab" id="tab-buyer" type="button" role="tab" aria-selected="true" aria-controls="app-buyer">Buyer CRM</button>
     <button class="tab" id="tab-candidate" type="button" role="tab" aria-selected="false" aria-controls="app-candidate">Candidate Hub</button>
@@ -1265,6 +1265,35 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     const member=teams.length===1?clean(teams[0]):teams.length>1?'Multiple_Teams':'';
     return ['BnT',member||clean(role),stamp].filter(Boolean).join('_');
   };
+  window.bntFollowupContactGroup = (row,current={}) => {
+    if(row.closed)return 3;
+    const norm=v=>String(v||'').trim().toLowerCase();
+    const talked=/^(?:int|interested|con|connected|cb|call back|callback|ap|appointment(?: fixed)?|pr|presentation(?: required)?|sv|site visit(?: planned)?|oh|on hold|closing|booking|registration|talked|interview scheduled|training|regular attendance|joined)$/;
+    const attempted=/^(?:nr|nc|lb|busy|no response|no answer|not responding|not connected|line busy|wn|wrong number|other)$/;
+    const results=[row.result,current.callOutcome,current.callStatus];
+    const notes=String(current.notes||row.notes||'');
+    for(const line of notes.split('\n')){
+      const event=line.match(/(?:\[?\d{6}_\d{4}\]?|\[\d{2}\/\d{2}\/\d{2}[^\]]*\])\s*:\s*(NR|NC|LB|Busy|No Response|No Answer|Not Responding|Not Connected|Line Busy|Call Back|Interested|Connected|Appointment Fixed|Presentation Required|Site Visit Planned|On Hold|Not Interested|Lost|Wrong Number|Other)\b/i)||line.match(/\[[^\]]+ Call - ([^\]]+)\]/i);
+      if(event)results.push(event[1]);
+    }
+    if(results.some(v=>talked.test(norm(v)))||talked.test(norm(current.stage))||talked.test(norm(current.status)))return 2;
+    if(results.some(v=>attempted.test(norm(v)))||current.lastOutcomeAt||/☎\s*(?:IC|OC)\b|\[[^\]]+ Call\]/i.test(notes)||/^Call on\b/i.test(current.lastContacted||''))return 1;
+    return 0;
+  };
+  window.bntSortFollowupRows = (rows,mode,groupTeams=false) => {
+    const name=(a,b)=>String(a.name||'').localeCompare(String(b.name||''),undefined,{sensitivity:'base',numeric:true});
+    const team=r=>String(r.member||'Unassigned').trim()||'Unassigned';
+    const due=r=>/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')?String(r.date):'9999-12-31';
+    return rows.sort((a,b)=>{
+      const teams=groupTeams?team(a).localeCompare(team(b),undefined,{sensitivity:'base',numeric:true}):0;
+      if(teams)return teams;
+      if(!!a.closed!==!!b.closed)return a.closed?1:-1;
+      if(mode==='date')return due(a).localeCompare(due(b))||name(a,b);
+      if(mode==='name')return name(a,b);
+      const rank=r=>mode==='talked'?({2:0,1:1,0:2,3:3}[r.contactGroup]??2):r.contactGroup;
+      return rank(a)-rank(b)||name(a,b);
+    });
+  };
   window.bntPrintFollowup = (records, role, scope, includeArchived=false, skipNoted=false, options={}) => {
     const requested=records||[];
     const report=options.report||[];
@@ -1288,9 +1317,13 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
       const label=current?(candidate?String(current.status||current.outcome||''):window.bntCalls.state(current).label):result;
       const closed=/^(?:Not Interested|NI|Lost|Failed|Closed[ _-]Lost)$/i.test(label);
       if(closed)result=/^(?:Not Interested|NI)$/i.test(label)||/^(?:Not Interested|NI)$/i.test(result)?'NI':'Lost';
-      return {...row,result,closed};
+      const prepared={...row,result,closed};
+      prepared.contactGroup=window.bntFollowupContactGroup(prepared,current||{});
+      return prepared;
     };
-    const rows = records.map(reportRow).sort((a,b) => (hasTeams?teamName(a).localeCompare(teamName(b),undefined,{sensitivity:'base',numeric:true}):0) || String(a.name || '').localeCompare(String(b.name || ''), undefined, {sensitivity:'base',numeric:true}));
+    let sortMode='uncontacted';
+    const sortLabels={uncontacted:'Not contacted → Attempted → Talked → NI / Lost',talked:'Talked → Attempted → Not contacted → NI / Lost',date:'Follow-up date: oldest first · Undated last · NI / Lost last',name:'Name A–Z · NI / Lost last'};
+    const rows = window.bntSortFollowupRows(records.map(reportRow),sortMode,hasTeams);
     const grouped=hasTeams && new Set(rows.map(teamName)).size>1;
     const w = window.open('', '_blank');
     if (!w) { alert('Allow pop-ups for this app to open the follow-up sheet.'); return; }
@@ -1301,15 +1334,15 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     const teamLine=role==='Buyer'||rows.some(row=>Object.prototype.hasOwnProperty.call(row,'member'))?window.bntPrintTeamLine(rows):'';
     const teamScopePrefix=teamLine.split(' • ')[0]+' · ';
     if(teamLine&&scope.startsWith(teamScopePrefix))scope=scope.slice(teamScopePrefix.length);
-    const header = `<header><div class="report-heading"><h1>BUYER &amp; TEAM HUB</h1><h2>OFFLINE FOLLOW-UP SHEET · ${escape(role)}</h2><div class="scope">${escape(scope)} · ${rows.length} records · ${grouped?'Team / Name A–Z':'Name A–Z'}</div></div>${teamLine?`<div class="team-block"><div class="team-label">TEAM</div><div class="team-name">${escape(teamLine.split(' • ')[0].replace(/^Team: /,''))}</div>${teamLine.includes(' • ')?`<div class="team-phone">${escape(teamLine.split(' • ').slice(1).join(' • '))}</div>`:''}</div>`:''}</header>`;
+    const header = () => `<header><div class="report-heading"><h1>BUYER &amp; TEAM HUB</h1><h2>OFFLINE FOLLOW-UP SHEET · ${escape(role)}</h2><div class="scope">${escape(scope)} · ${rows.length} records · ${grouped?'Within each team · ':''}${escape(sortLabels[sortMode])}</div></div>${teamLine?`<div class="team-block"><div class="team-label">TEAM</div><div class="team-name">${escape(teamLine.split(' • ')[0].replace(/^Team: /,''))}</div>${teamLine.includes(' • ')?`<div class="team-phone">${escape(teamLine.split(' • ').slice(1).join(' • '))}</div>`:''}</div>`:''}</header>`;
     const tableHead = '<colgroup><col style="width:11mm"><col style="width:35mm"><col style="width:28mm"><col style="width:21mm"><col style="width:12mm"><col style="width:75mm"><col style="width:8mm"></colgroup><thead><tr><th>Sl.</th><th>Name</th><th>Phone</th><th>Date</th><th>Result</th><th>Follow-up Notes</th><th>✓</th></tr></thead>';
     const footer = `<footer><span>Printed ${printed}</span><span class="page-number"></span><span class="author">Sashi R Nair</span></footer>`;
     const legend = '<div class="result-legend">NR = No Response · NC = Not Connected · LB = Line Busy · NI = Not Interested · CB = Call Back · INT = Interested · CON = Connected · AP = Appointment Fixed · PR = Presentation Required · SV = Site Visit Planned · OH = On Hold · WN = Wrong Number · Struck name = Not Interested / Lost</div>';
-    const section = () => `<section class="page">${header}<div class="table-wrap"><table>${tableHead}<tbody></tbody></table></div>${legend}${footer}</section>`;
+    const section = () => `<section class="page">${header()}<div class="table-wrap"><table>${tableHead}<tbody></tbody></table></div>${legend}${footer}</section>`;
     w.document.open();
     w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${escape(title)}</title><style>
-@page{size:A4 portrait;margin:10mm}*{box-sizing:border-box}body{margin:0;background:#e9edf2;font-family:'BnT Clear Digits',Calibri,Arial,sans-serif;color:#111}.controls{padding:12px;text-align:center}.controls button{padding:10px 20px;font:inherit;cursor:pointer}.page{width:190mm;height:275mm;background:white;margin:12px auto;padding:0;display:flex;flex-direction:column;break-after:page;page-break-after:always}.page:last-child{break-after:auto;page-break-after:auto}header{display:flex;justify-content:space-between;align-items:flex-start;gap:5mm;background:white;color:#111;padding:3mm 0;border-bottom:1px solid #777;margin-bottom:3mm;flex:none}.report-heading{flex:1;min-width:0}h1{font-size:15pt;margin:0 0 1.5mm}h2{font-size:10pt;font-weight:normal;margin:0}.team-block{text-align:right;max-width:45%;overflow-wrap:anywhere}.team-label{font-size:8.5pt;margin-bottom:1mm}.team-name,.team-phone{font-family:inherit;font-size:12pt;font-weight:bold;line-height:1.4;color:inherit}.team-phone{white-space:nowrap}.scope{font-size:8.5pt;padding:0;margin:2mm 0 0;overflow-wrap:anywhere}.table-wrap{flex:1;min-height:0;overflow:hidden}.result-legend{flex:none;margin-top:1.5mm;padding:1mm 0;font-size:6.5pt;line-height:1.3;color:#444;overflow-wrap:normal;word-break:normal}table{width:190mm;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #a8afbe;padding:1.6mm;font-size:9pt;line-height:1.18;vertical-align:top;overflow-wrap:anywhere;white-space:pre-wrap}th{height:8mm;color:#1c2452;text-align:center}td{height:9.2mm}td:nth-child(1),td:last-child{text-align:center}th:first-child,td:first-child{white-space:nowrap;overflow-wrap:normal;word-break:normal;padding-left:1mm;padding-right:1mm;font-variant-numeric:tabular-nums}td:nth-child(3){font-weight:bold;font-size:9.5pt;white-space:nowrap}td:nth-child(5){text-align:center;font-weight:bold;white-space:nowrap;font-size:8pt}tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}tr.highlighted td{background:#fff5ba}tr.closed td{background:#f0f0f0}tr.closed td:nth-child(2){text-decoration:line-through;text-decoration-thickness:1px}.team-heading td{height:auto;padding:2mm;font-size:12pt;font-weight:bold;background:#e8eef5;color:#1c2452}footer{height:8mm;flex:none;margin-top:2mm;border-top:1px solid #cdd0dc;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end;padding-bottom:1mm;color:#5a6073;font-size:8pt}footer span:nth-child(2){text-align:center}.author{text-align:right;font-family:'BnT Clear Digits',Calibri,Arial,sans-serif;font-size:8pt}@media print{body{background:white}.controls{display:none}.page{margin:0;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
-</style></head><body><div class="controls"><p id="previewCounts"></p><details id="previewExcluded"><summary>Excluded / held for review</summary><div id="previewReasons"></div></details><button id="printSheet">Print / Save as PDF</button><button id="saveExcel" hidden>Save Excel</button><button id="closePreview">Close preview</button></div>${rows.length?section():'<p style="text-align:center">No eligible records. Review the reasons above.</p>'}<style id="bnt-phone-bold-fixed">
+@page{size:A4 portrait;margin:10mm}*{box-sizing:border-box}body{margin:0;background:#e9edf2;font-family:'BnT Clear Digits',Calibri,Arial,sans-serif;color:#111}.controls{padding:12px;text-align:center}.controls button{padding:10px 20px;font:inherit;cursor:pointer}.controls select{padding:10px;font:inherit;margin:0 8px 8px 0;max-width:100%}.page{width:190mm;height:275mm;background:white;margin:12px auto;padding:0;display:flex;flex-direction:column;break-after:page;page-break-after:always}.page:last-child{break-after:auto;page-break-after:auto}header{display:flex;justify-content:space-between;align-items:flex-start;gap:5mm;background:white;color:#111;padding:3mm 0;border-bottom:1px solid #777;margin-bottom:3mm;flex:none}.report-heading{flex:1;min-width:0}h1{font-size:15pt;margin:0 0 1.5mm}h2{font-size:10pt;font-weight:normal;margin:0}.team-block{text-align:right;max-width:45%;overflow-wrap:anywhere}.team-label{font-size:8.5pt;margin-bottom:1mm}.team-name,.team-phone{font-family:inherit;font-size:12pt;font-weight:bold;line-height:1.4;color:inherit}.team-phone{white-space:nowrap}.scope{font-size:8.5pt;padding:0;margin:2mm 0 0;overflow-wrap:anywhere}.table-wrap{flex:1;min-height:0;overflow:hidden}.result-legend{flex:none;margin-top:1.5mm;padding:1mm 0;font-size:6.5pt;line-height:1.3;color:#444;overflow-wrap:normal;word-break:normal}table{width:190mm;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #a8afbe;padding:1.6mm;font-size:9pt;line-height:1.18;vertical-align:top;overflow-wrap:anywhere;white-space:pre-wrap}th{height:8mm;color:#1c2452;text-align:center}td{height:9.2mm}td:nth-child(1),td:last-child{text-align:center}th:first-child,td:first-child{white-space:nowrap;overflow-wrap:normal;word-break:normal;padding-left:1mm;padding-right:1mm;font-variant-numeric:tabular-nums}td:nth-child(3){font-weight:bold;font-size:9.5pt;white-space:nowrap}td:nth-child(5){text-align:center;font-weight:bold;white-space:nowrap;font-size:8pt}tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}tr.highlighted td{background:#fff5ba}tr.closed td{background:#f0f0f0}tr.closed td:nth-child(2){text-decoration:line-through;text-decoration-thickness:1px}.team-heading td{height:auto;padding:2mm;font-size:12pt;font-weight:bold;background:#e8eef5;color:#1c2452}footer{height:8mm;flex:none;margin-top:2mm;border-top:1px solid #cdd0dc;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end;padding-bottom:1mm;color:#5a6073;font-size:8pt}footer span:nth-child(2){text-align:center}.author{text-align:right;font-family:'BnT Clear Digits',Calibri,Arial,sans-serif;font-size:8pt}@media print{body{background:white}.controls{display:none}.page{margin:0;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style></head><body><div class="controls"><p id="previewCounts"></p><details id="previewExcluded"><summary>Excluded / held for review</summary><div id="previewReasons"></div></details><label for="pdfSort">Sort by </label><select id="pdfSort"><option value="uncontacted">Not contacted first</option><option value="talked">Talked / connected first</option><option value="date">Follow-up date: oldest first</option><option value="name">Name A–Z</option></select><button id="printSheet">Print / Save as PDF</button><button id="saveExcel" hidden>Save Excel</button><button id="closePreview">Close preview</button></div>${rows.length?section():'<p style="text-align:center">No eligible records. Review the reasons above.</p>'}<style id="bnt-phone-bold-fixed">
 input[type="tel"],#buyerPhone,#newMemberPhone,#fPhone,#fWhatsapp,.bnt-phone-number,a[href^="tel:"],.contact-link,.bnt-phone{
 font-family:Arial,Helvetica,sans-serif!important;font-weight:700!important;font-synthesis:weight!important;font-variant-numeric:lining-nums tabular-nums!important;color:#142c24!important;
 }
@@ -1330,6 +1363,8 @@ font-family:Arial,Helvetica,sans-serif!important;font-weight:700!important;font-
     const fillPages = () => {
       if(!rows.length)return;
       const doc = w.document;
+      doc.querySelectorAll('.page').forEach(page=>page.remove());
+      const initial=doc.createElement('div');initial.innerHTML=section();doc.body.append(initial.firstElementChild);
       let page = doc.querySelector('.page'), tbody = page.querySelector('tbody'), count = 0, currentTeam = null;
       const nextPage = () => { const shell=doc.createElement('div');shell.innerHTML=section();page=shell.firstElementChild;doc.body.append(page);tbody=page.querySelector('tbody');count=0;currentTeam=null; };
       const teamHeading=row=>{
@@ -1357,6 +1392,7 @@ font-family:Arial,Helvetica,sans-serif!important;font-weight:700!important;font-
       pages.forEach((page,i)=>page.querySelector('.page-number').textContent=`Page ${i+1} of ${pages.length}`);
       w.focus();
     };
+    w.document.getElementById('pdfSort').onchange=event=>{sortMode=event.target.value;window.bntSortFollowupRows(rows,sortMode,hasTeams);fillPages();};
     w.requestAnimationFrame(() => w.requestAnimationFrame(fillPages));
   };
 })();
