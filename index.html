@@ -10,7 +10,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Buyer &amp; Team Hub · 261112_0030 IST</title>
+<title>Buyer &amp; Team Hub · 261112_0045 IST</title>
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; font: 15px system-ui, -apple-system, sans-serif; color: #173044; }
@@ -172,10 +172,23 @@ body:has(#tab-buyer[aria-selected="true"]):has(main:not([hidden])) .bnt-quick{di
  body.print-daily-work #planner .review-head h2:after{content:' — Daily work done'}
  body.print-daily-work #planner #planEvents .plan-task{break-inside:avoid}
 }
-</style></head>
+</style><style id="bnt-tweak-261112-0045">
+/* Compact laptop table; mobile stays responsive. */
+@media screen and (min-width:901px){#planTargets .monitor-table{max-width:1040px;margin-left:auto;margin-right:auto}#planTargets .monitor-table td:first-child,#planTargets .monitor-table th:first-child{width:42%}}
+.bnt-achievement{font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bnt-achievement.under{color:#b42318}.bnt-achievement.met{color:#18723d}.bnt-achievement.over{color:#205ea8}.bnt-achievement.none{color:#65716e;font-weight:400}
+#planFollowups .bnt-followup-buyer{border-left:4px solid #2768ac;padding-left:10px}
+#planFollowups .bnt-followup-candidate{border-left:4px solid #218052;padding-left:10px}
+#planFollowups .bnt-followup-buyer .bnt-followup-name{color:#2563a6}
+#planFollowups .bnt-followup-candidate .bnt-followup-name{color:#218052}
+.bnt-role-tag{font-size:11px;font-weight:650;border-radius:4px;padding:2px 5px;margin-left:3px;background:#f1f5f4}
+.bnt-followup-buyer .bnt-role-tag{color:#2563a6}.bnt-followup-candidate .bnt-role-tag{color:#218052}
+@media print{.bnt-achievement.under,.bnt-achievement.met,.bnt-achievement.over{color:#222!important}}
+</style>
+</head>
 <body>
 <header>
-  <div class="top"><h1>Buyer &amp; Team Hub · OneDB · 261112_0030</h1><button id="waSetupButton" type="button">WhatsApp setup</button><button id="secretaryOpen" type="button">📞 Calls Required</button><button id="planOpen" type="button">Daily plan / KPI</button><button id="reviewButton" type="button" aria-haspopup="dialog">Call review</button></div>
+  <div class="top"><h1>Buyer &amp; Team Hub · OneDB · 261112_0045</h1><button id="waSetupButton" type="button">WhatsApp setup</button><button id="secretaryOpen" type="button">📞 Calls Required</button><button id="planOpen" type="button">Daily plan / KPI</button><button id="reviewButton" type="button" aria-haspopup="dialog">Call review</button></div>
   <div class="tabs" role="tablist" aria-label="Choose app">
     <button class="tab" id="tab-buyer" type="button" role="tab" aria-selected="true" aria-controls="app-buyer">Buyer CRM</button>
     <button class="tab" id="tab-candidate" type="button" role="tab" aria-selected="false" aria-controls="app-candidate">Candidate Hub</button>
@@ -596,6 +609,19 @@ return {today,stamp,compact,state,classify};})();
       const person = this.join(row, role);
       if (!person) throw Error('Duplicate phone. Open the existing record.');
       person.primaryRole = role;
+      // One lead-generation event per genuinely new person added through Add Member.
+      // Never count edits, role changes, reimports or restored records as new leads.
+      const planner=this.meta.dailyPlanner ||= {};
+      planner.events ||= [];
+      planner.activities ||= {};
+      const kind=role==='buyer'?'new_lead':'interview_prospect';
+      if(!planner.activities[kind])planner.activities[kind]={label:role==='buyer'?'New buyer leads':'New interview prospects',active:true};
+      const when=new Date(now);
+      const istParts=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(when).map(x=>[x.type,x.value]));
+      const createdDate=istParts.year+'-'+istParts.month+'-'+istParts.day;
+      const owner=String(record.member||record.teamMember||record.assignedTo||'Unassigned');
+      const eventId='newperson_'+person.id+'_'+role;
+      if(!planner.events.some(e=>e.id===eventId))planner.events.push({id:eventId,date:createdDate,kind,personId:person.id,name:person.name,phone:person.phone,team:owner,note:'New '+role+' lead entered · credited to '+owner,at:now,quantity:1,automatic:true,role});
       this.reconcileRoles();
       await this.persist();
       this.notify();
@@ -1180,7 +1206,8 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
  const message=t=>{$('planMessage').textContent=t;};
  async function save(work){if(!store)return false;busy=true;try{await store.enqueue(async()=>{const before=JSON.parse(JSON.stringify(model()));try{work();await store.persist();}catch(e){store.meta.dailyPlanner=before;throw e;}store.notify();});draw(!dirty);return true;}catch(e){message('Could not save: '+e.message);return false;}finally{busy=false;}}
  window.bntRecordActivity=async(phone,kind,id,note='')=>{store ||= await window.bntReady;return save(()=>{const m=model();if(m.events.some(e=>e.id===id))return;const p=window.bntFindPhone(phone),d=today();const task=Object.entries(m.days).filter(([origin])=>origin<=d).sort(([a],[b])=>a.localeCompare(b)).flatMap(([,v])=>v.tasks||[]).find(t=>!t.done&&t.kind===kind&&p&&t.personId===p.id);m.events.push({id,date:d,kind,personId:p?.id||'',name:p?.name||'',note,at:Date.now(),automatic:true,...(window.bntActivitySnapshot?.(p,kind,note)||{}),...(task?{taskId:task.id}:{})});if(task){task.done=true;task.eventId=id;task.completedDate=d;}});};
- function table(s,editable=false){const visible=kinds().filter(k=>model().activities[k]?.active!==false||s[k]?.plan||s[k]?.achieved);return '<table class="review-table monitor-table"><thead><tr><th>Activity</th><th>Planned</th><th>Actual</th><th>Pending</th><th>Achieved</th></tr></thead><tbody>'+visible.map(k=>{const x=s[k]||{plan:0,achieved:0};return `<tr><td>${esc(label(k))}${model().activities[k]?.active===false?' (hidden)':''}</td><td>${editable?`<input aria-label="Target for ${esc(label(k))}" data-target="${esc(k)}" type="number" min="0" max="9999" step="1" value="${x.plan}"><span class="monitor-print-target">${x.plan}</span>`:x.plan}</td><td>${x.achieved}</td><td>${Math.max(0,x.plan-x.achieved)}</td><td>${x.plan?Math.round(x.achieved/x.plan*100)+'%':'—'}</td></tr>`;}).join('')+'</tbody></table>';}
+ const achievement=(plan,actual)=>{const n=Number(plan)||0,a=Number(actual)||0;if(!n)return '<span class="bnt-achievement none">—</span>';const cls=a<n?'under':a===n?'met':'over';return `<span class="bnt-achievement ${cls}">${Math.round(a/n*100)}%</span>`;};
+ function table(s,editable=false){const visible=kinds().filter(k=>model().activities[k]?.active!==false||s[k]?.plan||s[k]?.achieved);return '<table class="review-table monitor-table"><thead><tr><th>Activity</th><th>Planned</th><th>Actual</th><th>Pending</th><th>Achieved</th></tr></thead><tbody>'+visible.map(k=>{const x=s[k]||{plan:0,achieved:0};return `<tr><td>${esc(label(k))}${model().activities[k]?.active===false?' (hidden)':''}</td><td>${editable?`<input aria-label="Target for ${esc(label(k))}" data-target="${esc(k)}" type="number" min="0" max="9999" step="1" value="${x.plan}"><span class="monitor-print-target">${x.plan}</span>`:x.plan}</td><td>${x.achieved}</td><td>${Math.max(0,x.plan-x.achieved)}</td><td>${achievement(x.plan,x.achieved)}</td></tr>`;}).join('')+'</tbody></table>';}
  function drawTargets(){const previous=$('planKind').value;const activities=Object.entries(model().activities).filter(([,v])=>v.active!==false);$('planKind').innerHTML=activities.map(([k,v])=>`<option value="${esc(k)}">${esc(v.label)}</option>`).join('');if(activities.some(([k])=>k===previous))$('planKind').value=previous;$('planTargets').innerHTML=table(summary(date(),date()),true);$('planActivityList').innerHTML=Object.entries(model().activities).map(([k,v])=>`<div class="plan-task"><span>${esc(v.label)}${v.active===false?' · Hidden':''}</span><button type="button" data-rename-activity="${esc(k)}">Rename</button><button type="button" data-activity="${esc(k)}">${v.active===false?'Show again':'Hide'}</button></div>`).join('');dirty=false;}
  function draw(force=false){if(!store||$('planner').hidden||!valid(date()))return;const d=date(),s=summary(d,d),tot=Object.values(s).reduce((a,x)=>({plan:a.plan+x.plan,actual:a.actual+x.achieved,pending:a.pending+Math.max(0,x.plan-x.achieved)}),{plan:0,actual:0,pending:0});const overdue=pending(d,'due').filter(t=>t.origin<d).length;$('planDayLabel').textContent='Daily targets · '+d;$('planSummary').innerHTML=`<div class="plan-total"><b>Planned ${tot.plan}</b><b>Actual ${tot.actual}</b><b>Pending ${tot.pending}</b><b>${overdue} overdue tasks</b></div>`;if(force||!dirty)drawTargets();drawTasks();drawFollowups();drawEvents();drawPeriod();}
  function drawTasks(){const d=date(),view=$('planView').value,tasks=pending(d,view);$('planTaskScope').textContent=view==='next'?shift(d,1)+' to '+shift(d,3):view==='day'?d:'All unfinished tasks due on or before '+d;$('planTasks').innerHTML=tasks.length?tasks.map(t=>`<div class="plan-task"><div><b>${esc(label(t.kind))}</b> · ${esc(t.personId?name(t.personId):t.note||'General work')}<div><span class="${t.origin<d?'monitor-overdue':''}">${t.origin<d?'Overdue '+days(t.origin,d)+' days':t.origin===d?'Due this day':t.origin}</span> · Planned ${t.origin}${t.time?' · '+esc(t.time):''}${t.personId&&t.note?' · '+esc(t.note):''}</div></div><div>${t.personId?`<button type="button" data-open-person="${esc(t.personId)}">Open person</button> `:''}<button type="button" data-done="${esc(t.id)}" data-origin="${t.origin}">Mark done</button> <button type="button" data-remove="${esc(t.id)}" data-origin="${t.origin}">Remove</button></div></div>`).join(''):'<p>No unfinished tasks in this view.</p>';}
@@ -1208,7 +1235,7 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
    .sort((a,b)=>a.due.localeCompare(b.due)||a.edited-b.edited||a.p.name.localeCompare(b.p.name));
  }
 
- function drawFollowups(){const d=date(),rows=followups();$('planFollowups').innerHTML=rows.length?`<p>${rows.length} due follow-up reminders</p>`+rows.map(({p,due,role})=>`<div class="plan-task"><div><b>${esc(p.name)}</b> · ${esc(monitorPhone(p.phone))} · ${role}<div class="${due<d?'monitor-overdue':''}">${due<d?'Overdue '+days(due,d)+' days':'Due '+due} · ${due}</div></div><div class="followup-actions"><button type="button" data-follow-call="${esc(p.id)}" title="Call and record result">☎ Call</button><button type="button" data-follow-wa="${esc(p.id)}" title="Open WhatsApp and record result">WA</button><button type="button" data-open-person="${esc(p.id)}" title="Record result and follow-up">Result</button></div></div>`).join(''):'<p>No dated follow-ups in this view.</p>';}
+ function drawFollowups(){const d=date(),rows=followups();$('planFollowups').innerHTML=rows.length?`<p>${rows.length} due follow-up reminders</p>`+rows.map(({p,due,role})=>`<div class="plan-task ${role==='Buyer'?'bnt-followup-buyer':'bnt-followup-candidate'}"><div><b class="bnt-followup-name">${esc(p.name)}</b> · ${esc(monitorPhone(p.phone))} <span class="bnt-role-tag">${role}</span><div class="${due<d?'monitor-overdue':''}">${due<d?'Overdue '+days(due,d)+' days':'Due '+due} · ${due}</div></div><div class="followup-actions"><button type="button" data-follow-call="${esc(p.id)}" title="Call and record result">☎ Call</button><button type="button" data-follow-wa="${esc(p.id)}" title="Open WhatsApp and record result">WA</button><button type="button" data-open-person="${esc(p.id)}" title="Record result and follow-up">Result</button></div></div>`).join(''):'<p>No dated follow-ups in this view.</p>';}
  function drawDailyTable(){
   const rows=model().events.filter(e=>e.date===date()&&e.kind!=='contact_open');
   const totals=new Map();for(const e of rows){const k=e.kind;totals.set(k,(totals.get(k)||0)+qty(e));}
@@ -1777,7 +1804,7 @@ window.addEventListener('bnt-people-updated',()=>{if(!panel.hidden)render()});
   r.remainingPlan=r.mode==='weekly'?r.metrics.map(x=>{const input=[...$('kprRemaining').querySelectorAll('[data-kpr-rest]')].find(el=>el.dataset.kprRest===x.kind);return {...x,revised:input&&input.value!==''?Number(input.value):x.remaining};}):[];return r;}
  function remainingInputs(r){$('kprRemaining').innerHTML=r.remainingDays?'<p>'+esc(shift(r.date,1))+' to '+esc(r.sunday)+' · '+r.remainingDays+' days remaining</p><table class="review-table"><thead><tr><th>Activity</th><th>Week target</th><th>Done</th><th>Balance</th><th>Revised remaining target</th></tr></thead><tbody>'+r.metrics.map(x=>`<tr><td>${esc(x.label)}</td><td>${x.weekTarget}</td><td>${x.actual}</td><td>${x.remaining}</td><td><input aria-label="Remaining target for ${esc(x.label)}" type="number" min="0" max="99999" step="1" data-kpr-rest="${esc(x.kind)}" value="${x.remaining}" style="width:85px"></td></tr>`).join('')+'</tbody></table><p class="wa-help">Revised weekly aim = work already done + revised remaining target. The PDF shows the daily average needed. Saving the revision for today carries this aim into later reports for this week.</p>':'<p>Sunday: week complete. Review the results and add action points for next week below.</p>';}
 
- function refresh(){try{$('kprRemaining').replaceChildren();const r=report();if(r.mode==='weekly')remainingInputs(r);$('kprMessage').textContent='';$('kprPreview').innerHTML=`<div class="kpr-cards"><b>${r.from} to ${r.date}</b><b>${r.calls} saved call results</b><b>${r.people} identified people called</b><b>${r.whatsapp} WhatsApp chats opened</b></div>`+(r.metrics.length?'<table class="review-table"><thead><tr><th>Activity</th><th>Target</th><th>Actual</th><th>Balance</th><th>Achieved</th></tr></thead><tbody>'+r.metrics.map(x=>`<tr><td>${esc(x.label)}</td><td>${x.target}</td><td>${x.actual}</td><td>${x.balance}</td><td>${x.percent}</td></tr>`).join('')+'</tbody></table>':'<p>No recorded activity or targets for this date.</p>');}catch(e){$('kprPreview').replaceChildren();$('kprMessage').textContent=e.message;}}
+ function refresh(){try{$('kprRemaining').replaceChildren();const r=report();if(r.mode==='weekly')remainingInputs(r);$('kprMessage').textContent='';$('kprPreview').innerHTML=`<div class="kpr-cards"><b>${r.from} to ${r.date}</b><b>${r.calls} saved call results</b><b>${r.people} identified people called</b><b>${r.whatsapp} WhatsApp chats opened</b></div>`+(r.metrics.length?'<table class="review-table"><thead><tr><th>Activity</th><th>Target</th><th>Actual</th><th>Balance</th><th>Achieved</th></tr></thead><tbody>'+r.metrics.map(x=>`<tr><td>${esc(x.label)}</td><td>${x.target}</td><td>${x.actual}</td><td>${x.balance}</td><td>${x.target?`<span class="bnt-achievement ${x.actual<x.target?'under':x.actual===x.target?'met':'over'}">${x.percent}</span>`:`<span class="bnt-achievement none">—</span>`}</td></tr>`).join('')+'</tbody></table>':'<p>No recorded activity or targets for this date.</p>');}catch(e){$('kprPreview').replaceChildren();$('kprMessage').textContent=e.message;}}
  window.bntOpenKpr=async(mode='weekly')=>{await window.bntReady;reportMode=mode==='daily'?'daily':'weekly';$('kprHeading').textContent=reportMode==='daily'?'Daily progress / KPR':'Weekly progress / KPR';$('kprIntro').textContent=reportMode==='daily'?'Selected day only. Same activity, target, actual, balance and achievement format as the weekly report.':'Monday to the selected day, through Sunday for a completed week.';$('kprWeeklyPlan').hidden=reportMode==='daily';$('kprDate').max=today();$('kprDate').value=$('planDate').value||today();$('kprIncludeDetails').checked=$('planIncludeDetails').checked;loadReview();refresh();$('kprDialog').showModal();};
  $('planKpr').onclick=()=>window.bntOpenKpr('weekly');$('kprClose').onclick=()=>$('kprDialog').close();
  $('kprIncludeDetails').onchange=refresh;for(const id of ['kprDate','kprScope'])$(id).onchange=()=>{loadReview();refresh();};
