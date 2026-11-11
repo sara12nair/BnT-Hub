@@ -10,7 +10,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Buyer &amp; Team Hub · 261111_2251 IST</title>
+<title>Buyer &amp; Team Hub · 261111_2305 IST</title>
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; font: 15px system-ui, -apple-system, sans-serif; color: #173044; }
@@ -161,7 +161,7 @@ body:has(#tab-buyer[aria-selected="true"]):has(main:not([hidden])) .bnt-quick{di
 </style><style id="bnt-followup-actions-261111">.followup-actions{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.followup-actions button{white-space:nowrap;padding:7px 10px!important;font-size:12px!important}.followup-actions button:first-child{background:#eaf5ed!important}.followup-actions button:nth-child(2){background:#e8f4ff!important}@media(max-width:650px){#planFollowups .plan-task{gap:5px}.followup-actions button{padding:6px 8px!important;font-size:11px!important}}@media print{.followup-actions{display:none!important}}</style></head>
 <body>
 <header>
-  <div class="top"><h1>Buyer &amp; Team Hub · OneDB · 261111_2251 · Filter trial</h1><button id="waSetupButton" type="button">WhatsApp setup</button><button id="secretaryOpen" type="button">📞 Calls Required</button><button id="planOpen" type="button">Daily plan / KPI</button><button id="reviewButton" type="button" aria-haspopup="dialog">Call review</button></div>
+  <div class="top"><h1>Buyer &amp; Team Hub · OneDB · 261111_2305 · Filter trial</h1><button id="waSetupButton" type="button">WhatsApp setup</button><button id="secretaryOpen" type="button">📞 Calls Required</button><button id="planOpen" type="button">Daily plan / KPI</button><button id="reviewButton" type="button" aria-haspopup="dialog">Call review</button></div>
   <div class="tabs" role="tablist" aria-label="Choose app">
     <button class="tab" id="tab-buyer" type="button" role="tab" aria-selected="true" aria-controls="app-buyer">Buyer CRM</button>
     <button class="tab" id="tab-candidate" type="button" role="tab" aria-selected="false" aria-controls="app-candidate">Candidate Hub</button>
@@ -292,7 +292,7 @@ function state(b){
  if(b.archived)return {blocked:true,label:'Archived'};
  const stageIsLatest=!!b.stageUpdatedAt&&(!b.lastOutcomeAt||Date.parse(b.stageUpdatedAt)>=Date.parse(b.lastOutcomeAt));
  const vals=[b.stage,...(stageIsLatest?[]:[b.status,b.outcome,b.callOutcome,b.callStatus]),b.contactPreference,b.consentStatus].map(normal).join(' ');
- if(/not interested/i.test(vals))return {blocked:true,label:'Not Interested'};
+ if(/not interested|\bNI\b/i.test(vals))return {blocked:true,label:'Not Interested'};
  if(/\blost\b|\bfailed\b/i.test(vals))return {blocked:true,label:/failed/i.test(vals)?'Failed':'Lost'};
  if(/on hold/i.test(vals))return {blocked:true,label:'On Hold'};
  if(/archived/i.test(vals))return {blocked:true,label:'Archived'};
@@ -1170,7 +1170,30 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
  function drawTargets(){const previous=$('planKind').value;const activities=Object.entries(model().activities).filter(([,v])=>v.active!==false);$('planKind').innerHTML=activities.map(([k,v])=>`<option value="${esc(k)}">${esc(v.label)}</option>`).join('');if(activities.some(([k])=>k===previous))$('planKind').value=previous;$('planTargets').innerHTML=table(summary(date(),date()),true);$('planActivityList').innerHTML=Object.entries(model().activities).map(([k,v])=>`<div class="plan-task"><span>${esc(v.label)}${v.active===false?' · Hidden':''}</span><button type="button" data-rename-activity="${esc(k)}">Rename</button><button type="button" data-activity="${esc(k)}">${v.active===false?'Show again':'Hide'}</button></div>`).join('');dirty=false;}
  function draw(force=false){if(!store||$('planner').hidden||!valid(date()))return;const d=date(),s=summary(d,d),tot=Object.values(s).reduce((a,x)=>({plan:a.plan+x.plan,actual:a.actual+x.achieved,pending:a.pending+Math.max(0,x.plan-x.achieved)}),{plan:0,actual:0,pending:0});const overdue=pending(d,'due').filter(t=>t.origin<d).length;$('planDayLabel').textContent='Daily targets · '+d;$('planSummary').innerHTML=`<div class="plan-total"><b>Planned ${tot.plan}</b><b>Actual ${tot.actual}</b><b>Pending ${tot.pending}</b><b>${overdue} overdue tasks</b></div>`;if(force||!dirty)drawTargets();drawTasks();drawFollowups();drawEvents();drawPeriod();}
  function drawTasks(){const d=date(),view=$('planView').value,tasks=pending(d,view);$('planTaskScope').textContent=view==='next'?shift(d,1)+' to '+shift(d,3):view==='day'?d:'All unfinished tasks due on or before '+d;$('planTasks').innerHTML=tasks.length?tasks.map(t=>`<div class="plan-task"><div><b>${esc(label(t.kind))}</b> · ${esc(t.personId?name(t.personId):t.note||'General work')}<div><span class="${t.origin<d?'monitor-overdue':''}">${t.origin<d?'Overdue '+days(t.origin,d)+' days':t.origin===d?'Due this day':t.origin}</span> · Planned ${t.origin}${t.time?' · '+esc(t.time):''}${t.personId&&t.note?' · '+esc(t.note):''}</div></div><div>${t.personId?`<button type="button" data-open-person="${esc(t.personId)}">Open person</button> `:''}<button type="button" data-done="${esc(t.id)}" data-origin="${t.origin}">Mark done</button> <button type="button" data-remove="${esc(t.id)}" data-origin="${t.origin}">Remove</button></div></div>`).join(''):'<p>No unfinished tasks in this view.</p>';}
- function followups(){const d=date(),view=$('planView').value;return [...store.people.values()].flatMap(p=>{if(p.archived)return [];const rows=[];if(p.buyer){const b=p.buyer,status=window.bntCalls.state(b),due=b.followUpDate||b.followup||'';if(!status.blocked||status.label==='On Hold')rows.push({p,due,role:'Buyer'});}if(p.candidate){const c=p.candidate;if(!c.archived&&!(c.categories||[]).includes('purged')&&!/^(not interested|not selected|joined|lost|wrong number)$/i.test(c.status||''))rows.push({p,due:c.followup||c.followUpDate||'',role:'Candidate'});}return rows;}).filter(x=>valid(x.due)&&(view==='next'?x.due>d&&x.due<=shift(d,3):view==='day'?x.due===d:x.due<=d)).sort((a,b)=>a.due.localeCompare(b.due)||a.p.name.localeCompare(b.p.name));}
+ function followups(){
+  const d=date(),view=$('planView').value;
+  const inactive=v=>/^(?:not[ _-]*interested|NI|lost|failed|wrong[ _-]*number|not[ _-]*selected|archived)$/i.test(String(v||'').trim());
+  const lastResult=b=>{
+   const fields=[b.callOutcome,b.callStatus,b.outcome,b.status,b.stage];
+   if(fields.some(inactive))return true;
+   // When a later incoming call is recorded in notes, honour the latest result.
+   const lines=String(b.notes||'').split(/\n|(?=\[\d{6}_\d{4}\])|(?=\[\d{2}\/\d{2}\/\d{2})/).filter(x=>/\b(?:NR|NC|LB|NI|Not Interested|Lost|Interested|Connected|Call Back)\b/i.test(x));
+   const last=lines.at(-1)||'';
+   return /(?:^|[\s:–—-])(?:NI|Not Interested|Lost)(?=$|[\s.,;–—-])/i.test(last);
+  };
+  return [...store.people.values()].flatMap(p=>{
+   if(p.archived)return [];
+   const rows=[],buyer=p.buyer,candidate=p.candidate;
+   const buyerClosed=buyer&&(lastResult(buyer)||window.bntCalls.state(buyer).blocked&&window.bntCalls.state(buyer).label!=='On Hold');
+   if(buyer&&!buyerClosed)rows.push({p,due:buyer.followUpDate||buyer.followup||'',role:'Buyer',edited:Number(buyer.lastOutcomeAt||buyer.updatedAt||p.updatedAt)||Date.parse(buyer.lastOutcomeAt||buyer.updatedAt||'')||0});
+   // A synthetic Candidate row belonging to a Buyer must not resurrect an NI Buyer.
+   const genuineCandidate=p.roles?.includes('candidate')&&candidate;
+   if(genuineCandidate&&!candidate.archived&&!(candidate.categories||[]).includes('purged')&&!inactive(candidate.status)&&!inactive(candidate.outcome))rows.push({p,due:candidate.followup||candidate.followUpDate||'',role:'Candidate',edited:Number(candidate.updatedAt||p.updatedAt)||Date.parse(candidate.updatedAt||'')||0});
+   return rows;
+  }).filter(x=>valid(x.due)&&(view==='next'?x.due>d&&x.due<=shift(d,3):view==='day'?x.due===d:x.due<=d))
+   .sort((a,b)=>a.due.localeCompare(b.due)||a.edited-b.edited||a.p.name.localeCompare(b.p.name));
+ }
+
  function drawFollowups(){const d=date(),rows=followups();$('planFollowups').innerHTML=rows.length?`<p>${rows.length} due follow-up reminders</p>`+rows.map(({p,due,role})=>`<div class="plan-task"><div><b>${esc(p.name)}</b> · ${esc(monitorPhone(p.phone))} · ${role}<div class="${due<d?'monitor-overdue':''}">${due<d?'Overdue '+days(due,d)+' days':'Due '+due} · ${due}</div></div><div class="followup-actions"><button type="button" data-follow-call="${esc(p.id)}" title="Call and record result">☎ Call</button><button type="button" data-follow-wa="${esc(p.id)}" title="Open WhatsApp and record result">WA</button><button type="button" data-open-person="${esc(p.id)}" title="Record result and follow-up">Result</button></div></div>`).join(''):'<p>No dated follow-ups in this view.</p>';}
  function drawEvents(){const rows=model().events.filter(e=>e.date===date()&&e.kind!=='contact_open').sort((a,b)=>b.at-a.at);$('planEvents').innerHTML=rows.length?rows.map(e=>`<div class="plan-task"><div><b>${esc(label(e.kind))} × ${qty(e)}</b> · ${esc(e.name||(e.personId?name(e.personId):'General work'))}<div>${esc(e.note||'')}${e.automatic?' · From saved call outcome':''}</div></div>${e.automatic?'':`<button type="button" data-undo="${esc(e.id)}">Undo</button>`}</div>`).join(''):'<p>No actual work recorded for this date.</p>';}
  function drawPeriod(){const from=$('planFrom').value,to=$('planTo').value;if(!valid(from)||!valid(to)||from>to){$('planPeriod').textContent='Choose a valid date range.';return;}$('planPeriod').innerHTML=`<p>${from} to ${to}</p><div class="plan-scroll">${table(summary(from,to))}</div>`;}
