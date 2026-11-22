@@ -10,7 +10,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Buyer &amp; Team Hub · 261121_1403 IST</title>
+<title>Buyer &amp; Team Hub · 261122_0812 IST</title>
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; font: 15px system-ui, -apple-system, sans-serif; color: #173044; }
@@ -189,7 +189,7 @@ window.bntDisplayPhone=value=>{const raw=String(value??'').trim();let d=raw.repl
 <style>#personActivityDialog{width:min(680px,94vw);max-height:88vh;overflow:auto;padding:16px;border:1px solid #759886;border-radius:12px}#personActivityDialog::backdrop{background:#0007}#personActivityDialog input,#personActivityDialog select{max-width:100%;min-width:0}#generalActivities{padding:10px}#generalActivities input[type=search]{width:100%}@media(max-width:540px){#personActivityDialog .plan-controls{display:flex;flex-direction:column;align-items:stretch}#personActivityDialog .plan-controls>*{width:100%}}</style></head>
 <body>
 <header>
-  <div class="top"><h1>Buyer &amp; Team Hub · OneDB · 261121_1403</h1><button id="waSetupButton" type="button">WhatsApp setup</button><button id="secretaryOpen" type="button">📞 Calls Required</button><button id="planOpen" type="button">Daily plan / KPI</button><button id="reviewButton" type="button" aria-haspopup="dialog">Call review</button></div>
+  <div class="top"><h1>Buyer &amp; Team Hub · OneDB · 261122_0812</h1><button id="waSetupButton" type="button">WhatsApp setup</button><button id="secretaryOpen" type="button">📞 Calls Required</button><button id="planOpen" type="button">Daily plan / KPI</button><button id="reviewButton" type="button" aria-haspopup="dialog">Call review</button></div>
   <div class="tabs" role="tablist" aria-label="Choose app">
     <button class="tab" id="tab-buyer" type="button" role="tab" aria-selected="true" aria-controls="app-buyer">Buyer CRM</button>
     <button class="tab" id="tab-candidate" type="button" role="tab" aria-selected="false" aria-controls="app-candidate">Candidate Hub</button>
@@ -409,13 +409,27 @@ window.bntFilters=(()=>{
 <style>
 #kprDialog{width:min(1000px,96vw);max-height:90vh;overflow:auto;border:1px solid #c3d9cc;border-radius:14px;padding:20px;color:#173044}#kprDialog::backdrop{background:rgba(12,40,30,.5)}#kprDialog input,#kprDialog select,#kprDialog textarea{font:inherit;border:1px solid #b5cbc0;border-radius:7px;padding:8px;max-width:100%}#kprDialog textarea{display:block;width:100%;margin:7px 0 14px}#kprDialog button{font:inherit;border:1px solid #bdd1c6;border-radius:7px;padding:9px 13px;cursor:pointer;background:white;color:#174630}#kprSave{background:#146b46!important;color:white!important}.kpr-cards{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}.kpr-cards b{padding:10px;background:#edf6ef;border-radius:7px}#kprRemaining,#kprPreview{overflow-x:auto}
 </style>
-<dialog id="kprDialog"><div class="review-head"><h2 id="kprHeading">Weekly progress / KPR</h2><button id="kprClose" type="button">Close</button></div>
+<style>
+#kprPreview textarea.kpr-note{width:100%;box-sizing:border-box;min-width:9em;margin:0;resize:vertical;font-size:inherit}
+#kprPreview td.kpr-note-cell{min-width:23%}
+#kprPreview .kpr-mobile-label{display:none}
+@media(max-width:650px){
+ #kprPreview .kpr-metrics thead{display:none}
+ #kprPreview .kpr-metrics,#kprPreview .kpr-metrics tbody{display:block;width:100%;min-width:0}
+ #kprPreview .kpr-metrics tr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:6px}
+ #kprPreview .kpr-metrics th,#kprPreview .kpr-metrics .kpr-activity,#kprPreview .kpr-note-cell{grid-column:1/-1}
+ #kprPreview .kpr-metrics td{min-width:0;text-align:left;padding:4px 6px}
+ #kprPreview .kpr-mobile-label{display:block;font-size:.75em;font-weight:600}
+ #kprPreview textarea.kpr-note{min-width:0;font-size:16px}
+}
+</style>
+<dialog id="kprDialog"><div class="review-head"><h2 id="kprHeading">Weekly report summary</h2><button id="kprClose" type="button">Close</button></div>
 <p id="kprIntro">Monday to the selected day, through Sunday for a completed week.</p>
 <div class="review-controls"><label>Report up to<input id="kprDate" type="date"></label><label>Member<select id="kprMember"><option value="">All team members</option></select></label><label>Include<select id="kprScope"><option value="all">All activities</option><option value="buyer">Buyers</option><option value="candidate">Candidates</option></select></label></div>
 <div id="kprPreview"></div><div id="kprWeeklyPlan"><h3>Plan for the rest of this week</h3><div id="kprRemaining"></div></div><label><input id="kprIncludeDetails" type="checkbox"> Include individual activity details in PDF</label>
-<label>Quality review / action for improvement<textarea id="kprReview" rows="4" placeholder="What worked? What needs correction? What will you change for the remaining days?"></textarea></label>
+<label>Overall remarks (optional)<textarea id="kprReview" rows="3"></textarea></label>
 <p class="wa-help">Saved call results count as attempts. Repeat attempts count separately. WhatsApp achieved counts include confirmed completed follow-ups only; opening a chat stays in history. Past unrecorded activity cannot be reconstructed.</p>
-<button id="kprSave" type="button">Save timestamped PDF</button><p id="kprMessage" role="status"></p></dialog>
+<button id="kprSave" type="button">Save timestamped PDF</button> <button id="kprShare" type="button">Print / Share PDF</button><p id="kprMessage" role="status"></p></dialog>
 <div id="waNotice" role="status" hidden></div>
 <dialog id="waSetup">
   <form method="dialog" id="waSettingsForm">
@@ -461,7 +475,7 @@ window.bntFilters=(()=>{
 </section>
 <section id="planner" hidden aria-label="Work and progress monitor">
 <div class="review-head"><div><h2>Work &amp; Progress Monitor</h2><p>Plan the day. Record the work. Keep unfinished people in view.</p></div><button id="planClose" type="button">Close</button></div>
-<div class="plan-controls"><button id="planPrev" type="button">‹</button><label>Work date<input id="planDate" type="date" required></label><button id="planNext" type="button">›</button><button id="planToday" type="button">Today</button><button id="planPrint" type="button">Print work sheet</button><button id="planDailyPrint" type="button">Daily report PDF</button><label class="daily-print-option"><input id="planIncludeDetails" type="checkbox"> Include details</label><button id="planKpr" type="button">Weekly progress / KPR PDF</button><button id="planMonthlyKpr" type="button">Monthly KPR PDF</button></div>
+<div class="plan-controls"><button id="planPrev" type="button">‹</button><label>Work date<input id="planDate" type="date" required></label><button id="planNext" type="button">›</button><button id="planToday" type="button">Today</button><button id="planPrint" type="button">Print work sheet</button><button id="planDailyPrint" type="button">Daily report summary PDF</button><label class="daily-print-option"><input id="planIncludeDetails" type="checkbox"> Include details</label><button id="planKpr" type="button">Weekly report summary PDF</button><button id="planMonthlyKpr" type="button">Monthly KPR PDF</button></div>
 <p id="planMessage" role="status" aria-live="polite"></p>
 <div id="planSummary"></div>
 <h3 id="planDayLabel">Daily targets</h3><p class="review-note">Planned targets automatically carry forward from the previous saved day, including edits. Saving never changes earlier days. Actual counts come from recorded work. Opening or printing a record never counts as work.</p>
@@ -846,6 +860,11 @@ window.bntContactWorkflow=(()=>{
       this.reconcileRoles();await this.persist();this.notify('buyer');
     }); }
     appendActivity(person,kind,id,note,at=Date.now(),date=window.bntCalls.today(),fields={}){
+      if(kind==='candidate_presentation'){
+        const member=window.bntJoinedPresenter(person,date);
+        if(!member)return;
+        fields={...fields,team:member,joinedPresentation:true};
+      }
       const model=this.meta.dailyPlanner ||= {};
       const events=model.events ||= [];
       if(events.some(event=>event.id===id))return;
@@ -1688,6 +1707,10 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   }return {from:start,to:date,rows:result};
  }
  window.bntActivityGroups={groups,keys,general,aliases,removed,canonical,label,group,targets,events,effective,summary,leftovers};
+ window.bntJoinedPresenter=(person,date)=>{
+  const member=person?.team;
+  return member?.name&&member.joinedDate&&member.joinedDate<=date?member.name:'';
+ };
 })();
 </script>
 
@@ -1887,16 +1910,18 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   if(await save(()=>{
    const p=store.people.get(personId);
    if(!p?.roles?.includes(role))throw Error('Choose an activity for this person’s '+(p?.primaryRole==='candidate'?'Candidate':'Buyer')+' role.');
+   const presenter=kind==='candidate_presentation'?window.bntJoinedPresenter(p,d):'';
+   if(kind==='candidate_presentation'&&!presenter)throw Error('Record the team member’s joining date before recording a presentation.');
    const entries=model().events;
    if(entries.some(e=>e.date===d&&e.personId===personId&&activity.canonical(e.kind,e,store)===kind&&
        (e.note||'')===note&&!e.automatic&&(!e.activityTime||!activityTime||e.activityTime===activityTime))){
     throw Error('This activity is already recorded. Use a distinct note for a separate occurrence.');
    }
    const task=pending(d,'due').find(t=>t.personId===personId&&activity.canonical(t.kind,t,store)===kind);
-   const id=uid(),team=String(p[role]?.member||p.buyer?.member||p.candidate?.member||p.team?.name||'Unassigned');
+   const id=uid(),team=presenter||String(p[role]?.member||p.buyer?.member||p.candidate?.member||p.team?.name||'Unassigned');
    if(/_whatsapp$/.test(kind)&&d===today())clearPendingWhatsApp(p.id,role);
    entries.push({id,date:d,kind,quantity:n,personId,name:p.name,note,at,activityTime,recordedAt:savedAt,
-    automatic:false,confirmed:true,role,team,phone:p.phone||'',...(task?{taskId:task.id}:{})});
+    automatic:false,confirmed:true,role,team,phone:p.phone||'',...(presenter?{joinedPresentation:true}:{}),...(task?{taskId:task.id}:{})});
    if(task){const original=daily(task.origin).tasks.find(t=>t.id===task.id);original.done=true;original.eventId=id;original.completedDate=d;}
   })){
    drawPersonHistory();
@@ -2628,8 +2653,9 @@ window.addEventListener('bnt-people-updated',()=>{if(!panel.hidden)render()});
    return e.kind!=='contact_open'||/whatsapp/i.test(e.note||'');
   }).map(e=>{
    const p=store.people.get(e.personId),role=roleOf(e),kind=e.kind==='contact_open'?(role==='candidate'?'candidate_whatsapp':'buyer_whatsapp'):e.kind;
-   return {...e,name:e.name||p?.name||'',kind,role,phone:e.phone||p?.phone||'',detail:e.detail||e.note||'',result:e.result||(/_call$/.test(kind)?outcome(e.note):''),quantity:quantity(e)};
-  }).filter(e=>scope==='all'||e.role===scope).sort((a,b)=>a.date.localeCompare(b.date)||(Number(a.at)||0)-(Number(b.at)||0));
+   const joinedPresenter=kind==='candidate_presentation'?(e.joinedPresentation?e.team:window.bntJoinedPresenter(p,e.date)):'';
+   return {...e,name:e.name||p?.name||'',kind,role,phone:e.phone||p?.phone||'',detail:e.detail||e.note||'',result:e.result||(/_call$/.test(kind)?outcome(e.note):''),quantity:quantity(e),...(kind==='candidate_presentation'?{team:joinedPresenter,qualifyingPresentation:!!joinedPresenter}:{})};
+  }).filter(e=>(e.kind!=='candidate_presentation'||e.qualifyingPresentation)&&(scope==='all'||e.role===scope)).sort((a,b)=>a.date.localeCompare(b.date)||(Number(a.at)||0)-(Number(b.at)||0));
   const kinds=new Set([...window.bntActivityGroups.keys,...window.bntActivityGroups.general]);
   const metrics=[...kinds].filter(k=>k!=='contact_open'&&(scope==='all'||(scope==='buyer'?/^buyer_/.test(k)||k==='new_lead':/^candidate_/.test(k)||k==='interview_prospect'))).map(kind=>{
    const target=window.bntPlannerSummary(from,date)[kind]?.plan||0,originalWeekTarget=window.bntPlannerSummary(from,sunday)[kind]?.plan||0,weekTarget=revisionFor(kind)?.goal??originalWeekTarget,actual=rows.filter(e=>e.kind===kind).reduce((n,e)=>n+e.quantity,0);
@@ -2641,7 +2667,13 @@ window.addEventListener('bnt-people-updated',()=>{if(!panel.hidden)render()});
   const daily=[];for(let d=from;d<=date;d=shift(d,1)){const entries=rows.filter(e=>e.date===d);daily.push({date:d,day:dayName(d),calls:total(entries.filter(e=>/_call$/.test(e.kind))),whatsapp:total(entries.filter(e=>/_whatsapp$/.test(e.kind)))});}
   return {date,from,sunday,remainingDays,daily,scope,review,rows,metrics,results,calls:total(calls),people:known.size,whatsapp:total(whatsapp),sent:total(rows.filter(e=>e.kind==='whatsapp_sent')),callDetailCount:calls.filter(e=>e.detail&&e.result!=='Not recorded').length,legacy:rows.some(e=>e.automatic&&!Object.prototype.hasOwnProperty.call(e,'role'))};
  };
- let saving=false,reportMode='weekly';
+ let saving=false,reportMode='weekly',preparedPdf;
+ const weeklyTeamKinds=new Set(['candidate_p20','candidate_marketer_visit','candidate_presentation']);
+ const noteDrafts=new Map();
+ const notesKey=r=>encodeURIComponent(JSON.stringify([r.mode,r.from,r.member||''])).replace(/\./g,'%2E');
+ const storedNotes=r=>window.bntStore?.meta.kprItemNotes?.[notesKey(r)]||{};
+ const noteValues=r=>({...storedNotes(r),...noteDrafts.get(notesKey(r))});
+ const achievement=(x,target,actual)=>({...x,target,actual,balance:target?Math.max(0,target-actual):0,percent:target?Math.round(actual/target*100)+'%':'—'});
  function fillMembers(){const store=window.bntStore;if(!store)return;const members=store.meta?.buyerSetup?.teamMembers||[];const names=[...new Set([...members.map(m=>m.name),...(store.meta?.dailyPlanner?.events||[]).map(e=>e.team)].map(x=>String(x||'').trim()).filter(x=>x&&x!=='Unassigned'))].sort((a,b)=>a.localeCompare(b));const select=$('kprMember'),prior=select.value;select.innerHTML='<option value="">All team members</option>'+names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');if(names.includes(prior))select.value=prior;}
  function teamNames(member){if(!member)return [];const members=window.bntStore?.meta?.buyerSetup?.teamMembers||[],included=new Set([member.toLowerCase()]);let changed=true;while(changed){changed=false;for(const m of members){if(m.name&&m.reportsTo&&included.has(String(m.reportsTo).toLowerCase())&&!included.has(String(m.name).toLowerCase())){included.add(String(m.name).toLowerCase());changed=true;}}}return [...included];}
 
@@ -2649,61 +2681,132 @@ window.addEventListener('bnt-people-updated',()=>{if(!panel.hidden)render()});
  function validateDate(){const d=$('kprDate').value;return /^\d{4}-\d{2}-\d{2}$/.test(d)&&!isNaN(new Date(d+'T12:00:00Z'))&&new Date(d+'T12:00:00Z').toISOString().slice(0,10)===d&&d<=today();}
  function reviewKey(){return reportMode+'_'+$('kprDate').value+'_'+$('kprScope').value;}
  function loadReview(){$('kprReview').value=window.bntStore?.meta.kprReviews?.[reviewKey()]||'';}
- function report(){if(!validateDate())throw Error('Select today or a valid earlier date.');const r=window.bntKprBuild(window.bntStore,$('kprDate').value,$('kprScope').value,$('kprReview').value.trim(),reportMode);
-  if(reportMode==='daily'){
-   r.mode='daily';r.rows=r.rows.filter(e=>e.date===r.date);
-   const qty=arr=>arr.reduce((n,e)=>n+e.quantity,0);
-   const calls=r.rows.filter(e=>/_call$/.test(e.kind));r.calls=qty(calls);r.people=new Set(calls.map(e=>e.personId||e.phone).filter(Boolean)).size;
-   r.whatsapp=qty(r.rows.filter(e=>/_whatsapp$/.test(e.kind)));
-   r.sent=qty(r.rows.filter(e=>e.kind==='whatsapp_sent'));
-   r.results={};for(const e of calls)r.results[e.result||'Not recorded']=(r.results[e.result||'Not recorded']||0)+e.quantity;
-   const day=window.bntStore.meta.dailyPlanner?.days?.[r.date]||{};
-   r.metrics=r.metrics.map(x=>{const target=window.bntPlannerSummary(r.date,r.date)[x.kind]?.plan||0,actual=qty(r.rows.filter(e=>e.kind===x.kind));return {...x,target,actual,balance:Math.max(0,target-actual),percent:target?Math.round(actual/target*100)+'%':'—'};});
-   r.daily=[{date:r.date,day:dayName(r.date),calls:r.calls,whatsapp:r.whatsapp}];
-   r.remainingPlan=[];
-  }else r.mode=reportMode;
-  const member=$('kprMember').value;
-  if(member){const team=teamNames(member);r.member=member;r.teamMembers=team;r.rows=r.rows.filter(e=>team.includes(String(e.team||'').toLowerCase()));const qty2=arr=>arr.reduce((n,e)=>n+e.quantity,0);r.metrics=r.metrics.map(x=>({...x,target:0,weekTarget:0,actual:qty2(r.rows.filter(e=>e.kind===x.kind)),balance:0,remaining:0,percent:'—'})).filter(x=>x.actual);r.calls=qty2(r.rows.filter(e=>/_call$/.test(e.kind)));r.whatsapp=qty2(r.rows.filter(e=>/_whatsapp$/.test(e.kind)));r.sent=qty2(r.rows.filter(e=>e.kind==='whatsapp_sent'));r.people=new Set(r.rows.filter(e=>/_call$/.test(e.kind)).map(e=>e.personId||e.phone).filter(Boolean)).size;r.results={};for(const e of r.rows.filter(e=>/_call$/.test(e.kind)))r.results[e.result||'Not recorded']=(r.results[e.result||'Not recorded']||0)+e.quantity;
-   r.ownCount=qty2(r.rows.filter(e=>String(e.team||'').toLowerCase()===member.toLowerCase()));r.teamCount=qty2(r.rows)-r.ownCount;
-   r.daily=r.daily.map(day=>{const entries=r.rows.filter(e=>e.date===day.date);return {...day,calls:qty2(entries.filter(e=>/_call$/.test(e.kind))),whatsapp:qty2(entries.filter(e=>/_whatsapp$/.test(e.kind)))};});
+ function report(){
+  if(!validateDate())throw Error('Select today or a valid earlier date.');
+  const store=window.bntStore;
+  const r=window.bntKprBuild(store,$('kprDate').value,$('kprScope').value,$('kprReview').value.trim(),reportMode);
+  r.mode=reportMode;
+  r.member=$('kprMember').value;
+  if(r.mode==='daily'){
+   r.rows=r.rows.filter(e=>!weeklyTeamKinds.has(e.kind));
+   r.metrics=r.metrics.filter(x=>!weeklyTeamKinds.has(x.kind));
   }
+  if(r.member){
+   r.teamMembers=teamNames(r.member);
+   r.rows=r.rows.filter(e=>r.teamMembers.includes(String(e.team||'').toLowerCase()));
+  }
+  const quantityOf=entries=>entries.reduce((n,e)=>n+e.quantity,0);
+  const calls=r.rows.filter(e=>/_call$/.test(e.kind));
+  const whatsapp=r.rows.filter(e=>/_whatsapp$/.test(e.kind));
+  const actuals=new Map();
+  for(const e of r.rows)actuals.set(e.kind,(actuals.get(e.kind)||0)+e.quantity);
+  r.calls=quantityOf(calls);
+  r.whatsapp=quantityOf(whatsapp);
+  r.sent=quantityOf(r.rows.filter(e=>e.kind==='whatsapp_sent'));
+  r.people=new Set(calls.map(e=>e.personId||e.phone).filter(Boolean)).size;
+  r.results={};
+  for(const e of calls)r.results[e.result||'Not recorded']=(r.results[e.result||'Not recorded']||0)+e.quantity;
+  const dailyPlan=r.mode==='daily'?window.bntPlannerSummary(r.date,r.date):null;
+  const effectivePlan=r.mode==='weekly'?window.bntActivityGroups.effective(r.date,store):null;
+  const revisions=r.mode==='weekly'?(store.meta.kprGoalRevisions||[]).filter(x=>x.week===r.from&&x.cutoff<=r.date)
+    .sort((a,b)=>a.cutoff.localeCompare(b.cutoff)||(a.at||0)-(b.at||0)):[];
+  r.metrics=r.metrics.map(x=>{
+   const actual=actuals.get(x.kind)||0;
+   if(dailyPlan)return achievement(x,dailyPlan[x.kind]?.plan||0,actual);
+   if(effectivePlan&&weeklyTeamKinds.has(x.kind)){
+    const previous=revisions.filter(item=>window.bntActivityGroups.canonical(item.kind)===x.kind).at(-1);
+    const goal=previous?.goal??effectivePlan[x.kind]??0;
+    return {...achievement(x,goal,actual),weekTarget:goal,remaining:Math.max(0,goal-actual)};
+   }
+   if(r.member)return {...achievement(x,0,actual),weekTarget:0,remaining:0};
+   return {...achievement(x,x.target,actual),remaining:Math.max(0,x.weekTarget-actual)};
+  });
+  if(r.mode==='daily')r.metrics=r.metrics.filter(x=>x.group!=='General Activities'||x.target||x.actual||noteValues(r)[x.kind]);
+  if(r.member){
+   r.ownCount=quantityOf(r.rows.filter(e=>String(e.team||'').toLowerCase()===r.member.toLowerCase()));
+   r.teamCount=quantityOf(r.rows)-r.ownCount;
+   r.daily=r.daily.map(day=>({ ...day,calls:quantityOf(calls.filter(e=>e.date===day.date)),whatsapp:quantityOf(whatsapp.filter(e=>e.date===day.date)) }));
+  }
+  r.notes=noteValues(r);
   r.includeDetails=$('kprIncludeDetails').checked;
-  r.remainingPlan=r.mode==='weekly'?r.metrics.map(x=>{const input=[...$('kprRemaining').querySelectorAll('[data-kpr-rest]')].find(el=>el.dataset.kprRest===x.kind);return {...x,revised:input&&input.value!==''?Number(input.value):x.remaining};}):[];return r;}
+  const newTargets=new Map([...$('kprRemaining').querySelectorAll('[data-kpr-rest]')].map(input=>[input.dataset.kprRest,input.value]));
+  r.remainingPlan=r.mode==='weekly'&&!r.member?r.metrics.map(x=>({...x,revised:newTargets.get(x.kind)?Number(newTargets.get(x.kind)):x.remaining})):[];
+  return r;
+ }
  function remainingInputs(r){$('kprRemaining').innerHTML=r.remainingDays?'<p>'+esc(shift(r.date,1))+' to '+esc(r.sunday)+' · '+r.remainingDays+' days remaining</p><table class="review-table"><thead><tr><th>Activity</th><th>Week target</th><th>Done</th><th>Balance</th><th>Revised remaining target</th></tr></thead><tbody>'+r.metrics.map(x=>`<tr><td>${esc(x.label)}</td><td>${x.weekTarget}</td><td>${x.actual}</td><td>${x.remaining}</td><td><input aria-label="Remaining target for ${esc(x.label)}" type="number" min="0" max="99999" step="1" data-kpr-rest="${esc(x.kind)}" value="${x.remaining}" style="width:85px"></td></tr>`).join('')+'</tbody></table><p class="wa-help">Revised weekly aim = work already done + revised remaining target. The PDF shows the daily average needed. Saving the revision for today carries this aim into later reports for this week.</p>':'<p>Sunday: week complete. Review the results and add action points for next week below.</p>';}
 
- function refresh(){try{$('kprRemaining').replaceChildren();const r=report();if(r.mode==='weekly'&&!r.member)remainingInputs(r);$('kprMessage').textContent='';$('kprPreview').innerHTML=`<div class="kpr-cards"><b>${r.from} to ${r.date}</b>${r.member?'<b>'+esc(r.member)+' · Own '+r.ownCount+' · Team '+r.teamCount+' · Total '+(r.ownCount+r.teamCount)+'</b>':''}<b>${r.calls} saved call results</b><b>${r.people} identified people called</b><b>${r.whatsapp} WhatsApp follow-ups completed</b></div>`+(r.metrics.length?'<table class="review-table"><thead><tr><th>Activity</th><th>Target</th><th>Achieved</th><th>Balance</th><th>Achievement %</th></tr></thead><tbody>'+r.metrics.map((x,i)=>`${!i||r.metrics[i-1].group!==x.group?'<tr><th colspan="5">'+esc(x.group)+'</th></tr>':''}<tr><td>${esc(x.label)}</td><td>${x.target}</td><td>${x.actual}</td><td>${x.balance}</td><td>${x.target?`<span class="bnt-achievement ${x.actual<x.target?'under':x.actual===x.target?'met':'over'}">${x.percent}</span>`:`<span class="bnt-achievement none">—</span>`}</td></tr>`).join('')+'</tbody></table>':'<p>No recorded activity or targets for this date.</p>');}catch(e){$('kprPreview').replaceChildren();$('kprMessage').textContent=e.message;}}
- window.bntOpenKpr=async(mode='weekly')=>{await window.bntReady;fillMembers();reportMode=['daily','weekly','monthly'].includes(mode)?mode:'weekly';$('kprHeading').textContent=reportMode==='daily'?'Daily progress / KPR':reportMode==='monthly'?'Monthly progress / KPR':'Weekly progress / KPR';$('kprIntro').textContent=reportMode==='daily'?'Buyer / Sales above Candidate / Team, with space for a quality review.':reportMode==='monthly'?'First day of the selected month through the selected date.':'Monday to the selected day, through Sunday for a completed week.';$('kprWeeklyPlan').hidden=reportMode!=='weekly';$('kprDate').max=today();$('kprDate').value=$('planDate').value||today();$('kprIncludeDetails').checked=$('planIncludeDetails').checked;loadReview();refresh();$('kprDialog').showModal();};
+ function refresh(){
+  try{
+   $('kprRemaining').replaceChildren();
+   const r=report();
+   if(r.mode==='weekly'&&!r.member)remainingInputs(r);
+   $('kprMessage').textContent='';
+   const headings=['Activity','Target','Actual','Balance','Ach. %','Notes'];
+   const cell=(heading,value)=>`<td><span class="kpr-mobile-label">${heading}</span>${value}</td>`;
+   const rows=r.metrics.map((x,i)=>{
+    const section=!i||r.metrics[i-1].group!==x.group?`<tr><th colspan="6">${esc(x.group)}</th></tr>`:'';
+    const rate=x.target?`<span class="bnt-achievement ${x.actual<x.target?'under':x.actual===x.target?'met':'over'}">${x.percent}</span>`:'—';
+    const caption='Notes for '+x.group+' '+x.label;
+    return section+`<tr><td class="kpr-activity">${esc(x.label)}</td>`+
+      cell('Target',x.target||'Not set')+cell('Actual',x.actual)+cell('Balance',x.target?x.balance:'—')+cell('Ach. %',rate)+
+      `<td class="kpr-note-cell"><label class="kpr-mobile-label" for="kpr-note-${i}">Notes</label><textarea id="kpr-note-${i}" class="kpr-note" rows="1" maxlength="300" aria-label="${esc(caption)}" data-kpr-note="${esc(x.kind)}">${esc(r.notes[x.kind]||'')}</textarea></td></tr>`;
+   }).join('');
+   $('kprPreview').innerHTML=`<div class="kpr-cards"><b>${r.from} to ${r.date}</b>${r.member?'<b>'+esc(r.member)+' · Own '+r.ownCount+' · Team '+r.teamCount+' · Total '+(r.ownCount+r.teamCount)+'</b>':''}<b>${r.calls} saved call results</b><b>${r.people} identified people called</b><b>${r.whatsapp} WhatsApp follow-ups completed</b></div>`+
+    (r.metrics.length?`<table class="review-table kpr-metrics"><thead><tr>${headings.map(x=>'<th>'+x+'</th>').join('')}</tr></thead><tbody>${rows}</tbody></table>`:'<p>No recorded activity or targets for this date.</p>');
+   const key=notesKey(r);
+   $('kprPreview').oninput=event=>{
+    const kind=event.target.dataset.kprNote;
+    if(!kind)return;
+    noteDrafts.set(key,{...noteDrafts.get(key),[kind]:event.target.value});
+   };
+  }catch(error){
+   $('kprPreview').replaceChildren();
+   $('kprMessage').textContent=error.message;
+  }
+ }
+ window.bntOpenKpr=async(mode='weekly')=>{await window.bntReady;fillMembers();reportMode=['daily','weekly','monthly'].includes(mode)?mode:'weekly';$('kprHeading').textContent=reportMode==='daily'?'Daily report summary':reportMode==='monthly'?'Monthly progress / KPR':'Weekly report summary';$('kprIntro').textContent=reportMode==='daily'?'Daily work-plan targets and recorded actuals. Type notes beside each activity.':reportMode==='monthly'?'First day of the selected month through the selected date.':'Monday to the selected day, through Sunday for a completed week.';$('kprWeeklyPlan').hidden=reportMode!=='weekly';$('kprDate').max=today();$('kprDate').value=$('planDate').value||today();$('kprIncludeDetails').checked=$('planIncludeDetails').checked;loadReview();refresh();$('kprDialog').showModal();};
  $('planKpr').onclick=()=>window.bntOpenKpr('weekly');$('planMonthlyKpr').onclick=()=>window.bntOpenKpr('monthly');$('kprClose').onclick=()=>$('kprDialog').close();
  $('kprIncludeDetails').onchange=refresh;for(const id of ['kprDate','kprScope','kprMember'])$(id).onchange=()=>{loadReview();refresh();};
  // The renderer also runs in verification without browser UI or external libraries.
  window.bntKprPdf=async(r,generated=new Date())=>{
   const {PDFDocument,StandardFonts,rgb}=window.PDFLib,doc=await PDFDocument.create(),regular=await doc.embedFont(StandardFonts.Helvetica),bold=await doc.embedFont(StandardFonts.HelveticaBold);
-  const W=595.28,H=841.89,M=32,usable=W-2*M,ink=rgb(.10,.18,.22),green=rgb(.08,.38,.27),muted=rgb(.34,.40,.43);let page,y;
+  const daily=r.mode==='daily',W=daily?419.53:595.28,H=daily?595.28:841.89,M=daily?20:32,usable=W-2*M,ink=rgb(.10,.18,.22),green=rgb(.08,.38,.27),muted=rgb(.34,.40,.43),underTarget=rgb(.68,.14,.15);let page,y;
   const textWidth=(text,font,size)=>{try{return font.widthOfTextAtSize(text,size)}catch(_){const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');ctx.font=`${size}px sans-serif`;return ctx.measureText(text).width;}};
   const draw=async(text,x,top,size=9,font=regular,color=ink)=>{text=String(text??'');try{font.encodeText(text);page.drawText(text,{x,y:H-top-size,font,size,color});}catch(_){const scale=3,canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');ctx.font=`${size*scale}px sans-serif`;const width=Math.ceil(ctx.measureText(text).width)+4;canvas.width=width;canvas.height=Math.ceil(size*scale*1.6);ctx.font=`${size*scale}px sans-serif`;ctx.fillStyle='#193038';ctx.textBaseline='top';ctx.fillText(text,0,0);const img=await doc.embedPng(canvas.toDataURL('image/png'));page.drawImage(img,{x,y:H-top-canvas.height/scale,width:width/scale,height:canvas.height/scale});}};
   const wrap=(value,width,size=9,font=regular)=>{const out=[];for(const line of String(value??'').split('\n')){let pending='';for(const word of line.split(/\s+/)){if(!word)continue;let next=pending?pending+' '+word:word;if(textWidth(next,font,size)<=width){pending=next;continue;}if(pending){out.push(pending);pending='';}let part='';for(const char of word){if(textWidth(part+char,font,size)>width&&part){out.push(part);part='';}part+=char;}pending=part;}out.push(pending);}return out.length?out:[''];};
-  const newPage=async()=>{page=doc.addPage([W,H]);y=90;await draw(r.mode==='daily'?'BnT HUB DAILY REPORT':r.mode==='monthly'?'MONTHLY PROGRESS / KPR':'WEEKLY PROGRESS / KPR',M,26,15,bold,green);await draw((r.mode==='daily'?r.date:(r.mode==='monthly'?'Month ':'Monday ')+r.from+' to '+r.date)+'  |  '+scopeName(r.scope),M,49,10,bold);await draw('Generated: '+stamp(generated)+' IST'+(r.member?'  |  Member: '+r.member:''),M,65,8,regular,muted);page.drawLine({start:{x:M,y:H-81},end:{x:W-M,y:H-81},thickness:.6,color:green});};
+  const newPage=async()=>{
+   page=doc.addPage([W,H]);
+   if(daily){
+    y=77;
+    await draw('BnT Hub',M,18,9,bold,green);
+    await draw((r.member||'All team members')+' | Daily Report Summary',M,31,15,bold);
+    await draw(r.date+'  |  '+scopeName(r.scope)+'  |  Daily work-plan targets',M,53,8.5,regular,muted);
+    page.drawLine({start:{x:M,y:H-69},end:{x:W-M,y:H-69},thickness:.55,color:green});
+    return;
+   }
+y=90;await draw(r.mode==='monthly'?'MONTHLY PROGRESS / KPR':(r.member?r.member+' | Weekly Report Summary':'Weekly Report Summary'),M,26,15,bold,green);await draw((r.mode==='daily'?r.date:(r.mode==='monthly'?'Month ':'Monday ')+r.from+' to '+r.date)+'  |  '+scopeName(r.scope),M,49,10,bold);await draw('Generated: '+stamp(generated)+' IST'+(r.member?'  |  Member: '+r.member:''),M,65,8,regular,muted);page.drawLine({start:{x:M,y:H-81},end:{x:W-M,y:H-81},thickness:.6,color:green});};
   const ensure=async height=>{if(y+height>H-48)await newPage();};
   const paragraph=async(value,size=9,font=regular)=>{for(const line of wrap(value,usable,size,font)){await ensure(size+5);await draw(line,M,y,size,font);y+=size+5;}y+=6;};
   const heading=async value=>{await ensure(48);y+=7;await paragraph(value,11,bold);};
-  const table=async(headers,rows,widths,{padding=5}={})=>{const size=8.3,lineHeight=11;const paint=async(cells,isHead=false)=>{const font=isHead?bold:regular,lines=cells.map((v,i)=>wrap(v,widths[i]-2*padding,size,font));let offset=0,max=Math.max(...lines.map(x=>x.length));if(!isHead&&max*lineHeight+2*padding<=H-165&&y+max*lineHeight+2*padding>H-51){await newPage();await paint(headers,true);}
+  const table=async(headers,rows,widths,{padding=5,notes=false}={})=>{const size=8.3,lineHeight=11;const paint=async(cells,isHead=false)=>{const font=isHead?bold:regular,lines=cells.map((v,i)=>wrap(v,widths[i]-2*padding,size,font));let offset=0,max=Math.max(...lines.map(x=>x.length));if(!isHead&&max*lineHeight+2*padding<=H-165&&y+max*lineHeight+2*padding>H-51){await newPage();await paint(headers,true);}
     while(offset<max){let available=Math.floor((H-51-y-2*padding)/lineHeight);if(available<1){await newPage();if(!isHead)await paint(headers,true);available=Math.floor((H-51-y-2*padding)/lineHeight);}const count=Math.min(max-offset,available),height=count*lineHeight+2*padding;if(isHead)page.drawRectangle({x:M,y:H-y-height,width:usable,height,color:rgb(.91,.96,.93)});let x=M;
-     for(let i=0;i<cells.length;i++){for(let j=0;j<count;j++){const line=lines[i][offset+j];if(line!==undefined)await draw(line,x+padding,y+padding+j*lineHeight,size,font);}x+=widths[i];}y+=height;page.drawLine({start:{x:M,y:H-y},end:{x:W-M,y:H-y},thickness:.3,color:rgb(.80,.85,.84)});offset+=count;if(offset<max){await newPage();if(!isHead)await paint(headers,true);}}
+     for(let i=0;i<cells.length;i++){for(let j=0;j<count;j++){const line=lines[i][offset+j];if(line!==undefined){const performance=!isHead&&headers[i]==='Ach. %'&&/^\d+%$/.test(line);await draw(line,x+padding,y+padding+j*lineHeight,size,performance?bold:font,performance?(parseInt(line,10)<100?underTarget:green):ink);}}x+=widths[i];}
+     if(notes){const edge=W-M-widths.at(-1);page.drawLine({start:{x:edge,y:H-y},end:{x:edge,y:H-y-height},thickness:.35,color:rgb(.80,.85,.84)});}
+     y+=height;page.drawLine({start:{x:M,y:H-y},end:{x:W-M,y:H-y},thickness:.3,color:rgb(.80,.85,.84)});offset+=count;if(offset<max){await newPage();if(!isHead)await paint(headers,true);}}
    };await ensure(45);await paint(headers,true);for(const row of rows)await paint(row);y+=9;};
-  const activityDetails=async rows=>table(['Time IST / activity','Member / phone / team','Result / notes / next follow-up'],rows.map(e=>[e.date+' '+(e.activityTime===undefined?time(e.at):e.activityTime||'Time not entered')+'\n'+window.bntActivityGroups.label(e.kind)+(e.quantity>1?' x '+e.quantity:''),[e.name||'General activity',phone(e.phone),e.team].filter(Boolean).join('\n'),[e.result,e.detail,e.followup?'Follow-up saved: '+e.followup:''].filter(Boolean).join('\n')||'No details recorded']),[125,165,usable-290]);
+  const activityDetails=async rows=>table(['Time IST / activity','Member / phone / team','Result / notes / next follow-up'],rows.map(e=>[e.date+' '+(e.activityTime===undefined?time(e.at):e.activityTime||'Time not entered')+'\n'+window.bntActivityGroups.label(e.kind)+(e.quantity>1?' x '+e.quantity:''),[e.name||'General activity',phone(e.phone),e.team].filter(Boolean).join('\n'),[e.result,e.detail,e.followup?'Follow-up saved: '+e.followup:''].filter(Boolean).join('\n')||'No details recorded']),daily?[95,105,usable-200]:[125,165,usable-290]);
 
   await newPage();
   if(r.mode==='daily'){
    const groups=window.bntActivityGroups.groups.filter(g=>r.scope==='all'||g.id===r.scope);
    const byKind=new Map(r.metrics.map(metric=>[metric.kind,metric]));
-   const heads=['Activity','Target','Actual','Balance','Achievement %'];
-   const widths=[235,65,65,65,usable-430];
-   const tableRow=(label,x)=>[label,r.member?'—':x?.target??0,x?.actual??0,r.member?'—':x?.balance??0,x?.percent??'—'];
+   const heads=['Activity','Target','Actual','Balance','Ach. %','Notes'];
+   const widths=[120,42,36,39,37,usable-274];
+   const tableRow=(label,x)=>[label,x?.target||'Not set',x?.actual??0,x?.target?x.balance:'—',x?.percent??'—',r.notes?.[x?.kind]||''];
    if(r.member)await paragraph('Own activities: '+r.ownCount+'  |  Reporting team: '+r.teamCount+'  |  Total: '+(r.ownCount+r.teamCount),9,bold);
    for(const group of groups){
-    if(group.id==='candidate'&&r.scope==='all'&&doc.getPageCount()===1)y=Math.max(y,H/2-25);
     await heading(group.title);
-    await table(heads,group.items.map(([kind,label])=>tableRow(label,byKind.get(kind))),widths,{padding:3});
+    await table(heads,group.items.filter(([kind])=>!weeklyTeamKinds.has(kind)).map(([kind,label])=>tableRow(label,byKind.get(kind))),widths,{padding:3,notes:true});
     const results=new Map();
     for(const entry of r.rows.filter(e=>e.role===group.id&&/_call$/.test(e.kind))){
      const result=entry.result||'Not recorded';
@@ -2712,17 +2815,12 @@ window.addEventListener('bnt-people-updated',()=>{if(!panel.hidden)render()});
     const breakdown=[...results].map(([result,count])=>result+' '+count).join('  |  ');
     await paragraph('Call outcomes  •  '+(breakdown||'No saved call results'),8);
    }
-   await heading('Quality review / action for improvement');
-   if(r.review)await paragraph(r.review);
-   else for(let i=0;i<2;i++){
-    await ensure(17);y+=16;
-    page.drawLine({start:{x:M,y:H-y},end:{x:W-M,y:H-y},thickness:.45,color:muted});
-   }
-   const general=r.metrics.filter(x=>x.group==='General Activities'&&(x.target||x.actual));
+   if(r.review){await heading('Overall remarks');await paragraph(r.review);}
+   const general=r.metrics.filter(x=>x.group==='General Activities'&&(x.target||x.actual||r.notes?.[x.kind]));
    if(general.length){
     await ensure(53+general.length*17);
     await heading('General Activities');
-    await table(heads,general.map(x=>tableRow(x.label,x)),widths,{padding:3});
+    await table(heads,general.map(x=>tableRow(x.label,x)),widths,{padding:3,notes:true});
    }
    if(r.includeDetails&&r.rows.length){
     await newPage();
@@ -2736,7 +2834,14 @@ window.addEventListener('bnt-people-updated',()=>{if(!panel.hidden)render()});
    if(r.member)await paragraph('Member: '+r.member+'  |  Own activities: '+r.ownCount+'  |  Reporting team: '+r.teamCount+'  |  Total: '+(r.ownCount+r.teamCount),10,bold);await paragraph(`Saved call results: ${r.calls}   |   Identified people called: ${r.people}   |   WhatsApp follow-ups completed: ${r.whatsapp}`,10,bold);
   await paragraph('Counts cover activity recorded in this app. A saved call result counts as one attempt; repeat attempts count separately. WhatsApp follow-ups count only when confirmed as completed; chat opens remain in history. Past unrecorded activity cannot be reconstructed.',8,regular);
   if(r.mode!=='daily'){await heading('Day-wise progress');await table(['Day / date','Saved call results','WhatsApp follow-ups completed'],[...r.daily.map(d=>[d.day+' / '+d.date,d.calls,d.whatsapp]),[r.mode==='monthly'?'MONTH TO DATE':'WEEK TO DATE',r.calls,r.whatsapp]],[231,150,usable-381]);}
-  await heading(r.member?'Recorded achievements - '+r.member:(r.mode==='daily'?'Targets and achievement - '+r.date:r.mode==='monthly'?'Targets and achievement - month to date':'Targets and achievement - Monday to selected day'));if(r.metrics.length)await table(['Activity','Target','Achieved','Balance','Achievement %'],r.metrics.flatMap((x,i)=>[...(!i||r.metrics[i-1].group!==x.group?[[x.group,'','','','']]:[]),[x.label,r.member?'—':x.target,x.actual,r.member?'—':x.balance,x.percent]]),[255,62,62,62,usable-441]);else await paragraph('No targets or activity recorded for this date.');
+  await heading(r.member?'Recorded achievements - '+r.member:r.mode==='monthly'?'Targets and achievement - month to date':'Targets and achievement - Monday to selected day');
+  if(r.metrics.length){
+   const rows=r.metrics.flatMap((x,i)=>[
+    ...(!i||r.metrics[i-1].group!==x.group?[[x.group,'','','','','']]:[]),
+    [x.label,x.target||'Not set',x.actual,x.target?x.balance:'—',x.percent,r.notes?.[x.kind]||'']
+   ]);
+   await table(['Activity','Target','Actual','Balance','Ach. %','Notes'],rows,[180,54,52,54,52,usable-392],{notes:true});
+  }else await paragraph('No targets or activity recorded for this date.');
   if(r.mode==='weekly'&&!r.member){await heading('Remaining-week plan - through Sunday '+r.sunday);if(r.remainingDays){await paragraph(r.remainingDays+' days remain after the selected day. Weekly targets below use the latest saved revision available for this report date.',8);await table(['Activity','Week target','Done','Balance','Revised remaining','Needed / day'],(r.remainingPlan||r.metrics.map(x=>({...x,revised:x.remaining}))).map(x=>[x.label,x.weekTarget,x.actual,x.remaining,x.revised,(x.revised/r.remainingDays).toFixed(1)]),[206,65,45,55,85,usable-456]);}else {await paragraph('Sunday: this week is complete. Use the review below to plan improvements for next week.');if(r.metrics.length)await table(['Activity','Week target','Actual','Unmet balance','Week achieved'],r.metrics.map(x=>[x.label,x.weekTarget,x.actual,x.remaining,x.weekTarget?Math.round(x.actual/x.weekTarget*100)+'%':'No target']),[255,65,55,80,usable-455]);}}
   await heading('Unfinished Targets - regular daily target stays separate');
   for(const view of ['month','all']){
@@ -2747,14 +2852,118 @@ window.addEventListener('bnt-people-updated',()=>{if(!panel.hidden)render()});
    else await paragraph('Unfinished targets are shown in the Work monitor for the shared daily plan; they are not attributed to an individual member.',8);
   }
   await heading('Call result breakdown');if(Object.keys(r.results).length)await table(['Saved result','Attempts'],Object.entries(r.results),[usable-85,85]);else await paragraph('No saved call results recorded for this date.');
-  await heading('Quality review and next improvement');await paragraph(r.review||'No review note entered.');
+  if(r.review){await heading('Overall remarks');await paragraph(r.review);}
   if(r.includeDetails){await heading('Activity details');if(r.rows.length)await activityDetails(r.rows);else await paragraph('No activity details recorded.');
   await paragraph('NR = No Response; NC = Not Connected; LB = Line Busy. Older entries may have only the details originally recorded. General activities and bulk quantities do not establish individual member contacts.',8);}
   }
   const pages=doc.getPages();for(let i=0;i<pages.length;i++){page=pages[i];await draw(stamp(generated)+' IST',M,H-28,8,regular,muted);await draw(`Page ${i+1} of ${pages.length}`,W/2-24,H-28,8,regular,muted);await draw('Sashi Nair',W-M-textWidth('Sashi Nair',regular,8),H-28,8,regular,muted);}
-  doc.setTitle((r.mode==='daily'?'Daily':r.mode==='monthly'?'Monthly':'Weekly')+' Progress KPR - '+(r.mode==='daily'?r.date:r.from+' to '+r.date));doc.setAuthor('Sashi Nair');doc.setCreationDate(generated);return doc.save();
+  doc.setTitle((r.mode==='daily'?'Daily Report Summary':r.mode==='monthly'?'Monthly Progress KPR':'Weekly Report Summary')+' - '+(r.mode==='daily'?r.date:r.from+' to '+r.date));doc.setAuthor('Sashi Nair');doc.setCreationDate(generated);return doc.save();
  };
- $('kprSave').onclick=async()=>{if(saving)return;saving=true;$('kprSave').disabled=true;try{const store=await window.bntReady;await store.queue;const r=report();for(const input of $('kprRemaining').querySelectorAll('input'))if(!input.checkValidity())throw Error('Use a whole remaining target from 0 to 99999.');$('kprMessage').textContent='Preparing PDF...';await store.enqueue(async()=>{const previous=store.meta.kprReviews,oldGoals=store.meta.kprGoalRevisions;try{if(r.mode==='weekly'&&r.date===today()&&r.remainingDays){const changes=(r.remainingPlan||[]).filter(x=>x.revised!==x.remaining);store.meta.kprGoalRevisions=[...(oldGoals||[]),...changes.map(x=>({week:r.from,cutoff:r.date,at:Date.now(),kind:x.kind,goal:x.actual+x.revised,priorGoal:x.weekTarget,remainingTarget:x.revised,actualAtRevision:x.actual}))];}store.meta.kprReviews={...(previous||{}),[reviewKey()]:r.review};await store.persist();}catch(error){store.meta.kprReviews=previous;store.meta.kprGoalRevisions=oldGoals;throw error;}});const generated=new Date(),bytes=await window.bntKprPdf(r,generated),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),a=document.createElement('a');a.href=url;const safe=(r.member||'All').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'');a.download='BnT_KPR_'+safe+'_'+(r.mode==='daily'?'D':r.mode==='monthly'?'M':'W')+'_'+stamp(generated)+'.pdf';a.click();const old=$('kprOpenPdf');if(old)old.remove();const link=document.createElement('a');link.id='kprOpenPdf';link.href=url;link.target='_blank';link.rel='noopener';link.textContent='Open PDF to print or share';link.style.marginLeft='10px';$('kprMessage').after(link);setTimeout(()=>{URL.revokeObjectURL(url);link.remove();},300000);$('kprMessage').textContent='PDF saved. Open it to print or share.';}catch(error){$('kprMessage').textContent='Could not save PDF: '+error.message;}finally{saving=false;$('kprSave').disabled=false;}};
+ function setPdfBusy(value){
+  saving=value;
+  $('kprSave').disabled=value;
+  $('kprShare').disabled=value;
+ }
+ function openPdfLink(file){
+  const old=$('kprOpenPdf');
+  if(old){URL.revokeObjectURL(old.href);old.remove();}
+  const url=URL.createObjectURL(file),link=document.createElement('a');
+  link.id='kprOpenPdf';link.href=url;link.target='_blank';link.rel='noopener';
+  link.textContent='Open PDF to print or share';link.style.marginLeft='10px';
+  $('kprMessage').after(link);
+  setTimeout(()=>{URL.revokeObjectURL(url);link.remove();},300000);
+  return url;
+ }
+ async function preparePdf(store,r){
+  for(const input of $('kprRemaining').querySelectorAll('input'))
+   if(!input.checkValidity())throw Error('Use a whole remaining target from 0 to 99999.');
+  $('kprMessage').textContent='Preparing PDF…';
+  const key=notesKey(r),draft=noteDrafts.get(key),reviewId=reviewKey();
+  const savedReview=store.meta.kprReviews?.[reviewId]||'';
+  const revisedGoals=r.mode==='weekly'&&r.date===today()&&r.remainingPlan.some(x=>x.revised!==x.remaining);
+  if(draft||savedReview!==r.review||revisedGoals){
+   await store.enqueue(async()=>{
+    const previousReviews=store.meta.kprReviews,previousGoals=store.meta.kprGoalRevisions,previousNotes=store.meta.kprItemNotes;
+    try{
+     if(r.mode==='weekly'&&r.date===today()&&r.remainingDays){
+      const changes=r.remainingPlan.filter(x=>x.revised!==x.remaining);
+      if(changes.length)store.meta.kprGoalRevisions=[...(previousGoals||[]),...changes.map(x=>({week:r.from,cutoff:r.date,at:Date.now(),kind:x.kind,goal:x.actual+x.revised,priorGoal:x.weekTarget,remainingTarget:x.revised,actualAtRevision:x.actual}))];
+     }
+     store.meta.kprReviews={...(previousReviews||{}),[reviewId]:r.review};
+     if(draft){
+      const notes=Object.fromEntries(Object.entries({...previousNotes?.[key],...draft}).filter(([,value])=>String(value).trim()));
+      store.meta.kprItemNotes={...(previousNotes||{}),[key]:notes};
+     }
+     await store.persist();
+     if(noteDrafts.get(key)===draft)noteDrafts.delete(key);
+    }catch(error){
+     store.meta.kprReviews=previousReviews;store.meta.kprGoalRevisions=previousGoals;store.meta.kprItemNotes=previousNotes;
+     throw error;
+    }
+   });
+  }
+  const generated=new Date(),bytes=await window.bntKprPdf(r,generated);
+  const safe=(r.member||'All').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'');
+  const file=new File([bytes],'BnT_KPR_'+safe+'_'+{daily:'D',monthly:'M',weekly:'W'}[r.mode]+'_'+stamp(generated)+'.pdf',{type:'application/pdf'});
+  preparedPdf={file,signature:pdfSignature(r)};
+  return file;
+ }
+ function pdfSignature(r){
+  return JSON.stringify({...r,notes:Object.fromEntries(Object.entries(r.notes).filter(([,value])=>String(value).trim()).sort())});
+ }
+ function canSharePdf(file){
+  try{return !!navigator.share&&navigator.canShare?.({files:[file]});}catch(_){return false;}
+ }
+ $('kprSave').onclick=async()=>{
+  if(saving)return;
+  setPdfBusy(true);
+  try{
+   const store=await window.bntReady;await store.queue;
+   const file=await preparePdf(store,report()),url=openPdfLink(file),a=document.createElement('a');
+   a.href=url;a.download=file.name;a.click();
+   $('kprMessage').textContent='PDF saved.';
+  }catch(error){$('kprMessage').textContent='Could not save PDF: '+error.message;}
+  finally{setPdfBusy(false);}
+ };
+ const shareProbe=new File([''],'report.pdf',{type:'application/pdf'});
+ $('kprShare').onclick=async()=>{
+  if(saving)return;
+  setPdfBusy(true);
+  let printTab;
+  try{
+   const current=report();
+   const nativeShare=canSharePdf(preparedPdf?.file||shareProbe);
+   if(!nativeShare){
+    printTab=window.open('about:blank','_blank');
+    if(printTab)printTab.opener=null;
+   }
+   let file=preparedPdf?.signature===pdfSignature(current)?preparedPdf.file:null;
+   if(!file){
+    const store=await window.bntReady;await store.queue;
+    file=await preparePdf(store,report());
+   }
+   const url=openPdfLink(file);
+   if(nativeShare&&canSharePdf(file)){
+    if(navigator.userActivation&&!navigator.userActivation.isActive){
+     $('kprMessage').textContent='PDF ready. Tap Print / Share PDF again to choose WhatsApp.';
+     return;
+    }
+    try{
+     await navigator.share({files:[file],title:'BnT Hub report'});
+     $('kprMessage').textContent='PDF sent to the selected app.';
+    }catch(error){
+     $('kprMessage').textContent=error.name==='AbortError'?'PDF ready.':'Open the PDF to print or share, or save it and attach it in WhatsApp.';
+    }
+   }else if(printTab){
+    printTab.location.replace(url);
+    $('kprMessage').textContent='Use Print or Share in the PDF viewer.';
+   }else $('kprMessage').textContent='Open the PDF to print or share, or save it and attach it in WhatsApp.';
+  }catch(error){
+   printTab?.close();
+   $('kprMessage').textContent='Could not prepare PDF: '+error.message;
+  }finally{setPdfBusy(false);}
+ };
+
 })();
 
 </script>
